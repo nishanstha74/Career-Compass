@@ -1,28 +1,71 @@
-import { useState } from "react";
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useUser, AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
+import SignIn from "./components/SignIn";
+import SignUp from "./components/SignUp";
+import Dashboard from "./components/Dashboard";
+import Home from "./components/Home";
 
-function App() {
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-      <header className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-blue-600">CareerCompass</h1>
-        <p className="text-gray-600"> Guide to choose right career </p>
-      </header>
+// Protected Route: Instantly checks if user is signed in, no full-screen loading block
+function ProtectedRoute({ children }) {
+  const { isLoaded, isSignedIn } = useUser();
 
-      <main className="space-y-6">
-        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          Get Started
-        </button>
-        <p className="text-gray-700">
-          This is a simple React + Tailwind setup. We’ll add real features
-          later.
-        </p>
-      </main>
-
-      <footer className="mt-10 text-sm text-gray-500">
-        © 2026 CareerCompass Project
-      </footer>
-    </div>
-  );
+  if (!isLoaded) return null; // Returns nothing until Clerk resolves, preventing flashes
+  return isSignedIn ? children : <Navigate to="/signin" replace />;
 }
 
-export default App;
+// Public Route: Instantly checks status to eliminate the loading delay
+function PublicRoute({ children }) {
+  const { isLoaded, isSignedIn } = useUser();
+
+  if (!isLoaded) return null; // Returns nothing until Clerk resolves, preventing flashes
+  return !isSignedIn ? children : <Navigate to="/dashboard" replace />;
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* 1. DEFAULT ROOT ROUTE: Automatically opens the Home landing page when you run the program */}
+        <Route path="/" element={<Home />} />
+
+        {/* Public Authentication Routes */}
+        <Route
+          path="/signin"
+          element={
+            <PublicRoute>
+              <SignIn />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <PublicRoute>
+              <SignUp />
+            </PublicRoute>
+          }
+        />
+
+        {/* Handles the Google OAuth handshake processing safely */}
+        <Route
+          path="/sso-callback"
+          element={<AuthenticateWithRedirectCallback />}
+        />
+
+        {/* Protected Dashboard Route */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 2. CATCH-ALL FALLBACK: Redirects broken or unrecognized URLs back to the Home page safely */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
