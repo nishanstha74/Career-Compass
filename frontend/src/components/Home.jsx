@@ -81,13 +81,39 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-indigo-600 selection:text-white flex flex-col justify-between scroll-smooth">
-      {/* 1. HEADER (DYNAMIC NAVIGATION BAR) */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 h-16 flex items-center justify-between px-6 md:px-12">
+      {/* Universal CSS Entry & Hover System */}
+      <style>{`
+        @keyframes fadeInUpCustom {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        /* Auto entry animation rule applied directly to components */
+        .render-animate-card {
+          opacity: 0;
+          animation: fadeInUpCustom 0.5s cubic-bezier(0.215, 0.610, 0.355, 1) forwards;
+        }
+
+        /* Staggered dynamic timeline speeds */
+        .delay-0 { animation-delay: 50ms; }
+        .delay-1 { animation-delay: 150ms; }
+        .delay-2 { animation-delay: 250ms; }
+        .delay-3 { animation-delay: 350ms; }
+      `}</style>
+
+      {/* 1. HEADER */}
+      <header className="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-50 h-16 flex items-center justify-between px-6 md:px-12">
         <div
-          className="flex items-center space-x-3 cursor-pointer"
+          className="flex items-center space-x-3 cursor-pointer group"
           onClick={() => navigate("/")}
         >
-          <div className="w-9 h-9 flex items-center justify-center shrink-0">
+          <div className="w-9 h-9 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105">
             <img
               src={appLogo}
               alt="CareerCompass Logo"
@@ -96,7 +122,7 @@ export default function Home() {
           </div>
 
           <div>
-            <span className="font-bold text-base tracking-tight block leading-tight text-slate-900">
+            <span className="font-bold text-base tracking-tight block leading-tight text-slate-900 group-hover:text-indigo-600 transition-colors duration-300">
               CareerCompass
             </span>
             <span className="text-[9px] font-mono font-bold tracking-wider text-slate-400 block uppercase">
@@ -105,33 +131,35 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Navigation Anchor Links */}
-        <div className="hidden md:flex items-center gap-8 text-xs font-semibold tracking-wider uppercase text-slate-500">
+        {/* Navigation Links */}
+        <nav className="hidden md:flex items-center gap-8 text-xs font-bold tracking-wider uppercase">
           <a
             href="#features"
-            className="hover:text-indigo-600 transition-colors"
+            className="text-slate-500 hover:text-indigo-600 relative py-2 transition-colors duration-300 group"
           >
             Features
+            <span className="absolute bottom-0 left-0 w-full h-[2px] bg-indigo-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-center"></span>
           </a>
           <a
             href="#pipeline"
-            className="hover:text-indigo-600 transition-colors"
+            className="text-slate-500 hover:text-indigo-600 relative py-2 transition-colors duration-300 group"
           >
             How It Works
+            <span className="absolute bottom-0 left-0 w-full h-[2px] bg-indigo-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-center"></span>
           </a>
-        </div>
+        </nav>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3">
           <button
             onClick={handleSignInClick}
-            className="text-sm font-semibold text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg transition-colors"
+            className="text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 px-4 py-2 rounded-xl transition-all duration-200"
           >
             Sign In
           </button>
 
           <button
             onClick={handleGetStarted}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all shadow-sm shadow-indigo-100 flex items-center space-x-1"
+            className="bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all duration-200 shadow-sm shadow-indigo-100 flex items-center space-x-1"
           >
             <span>Get Started</span>
             <ArrowRight className="w-4 h-4" />
@@ -139,9 +167,9 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 2. HERO INNER INTERFACE */}
+      {/* 2. MAIN CORE */}
       <main className="flex-1 pt-16">
-        {/* HERO INTRO CONTENT SECTION */}
+        {/* HERO SECTION */}
         <section className="relative px-6 py-16 md:py-24 max-w-7xl mx-auto text-center overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-indigo-500/5 blur-[120px] -z-10 rounded-full" />
 
@@ -165,7 +193,7 @@ export default function Home() {
                 onClick={handleGetStarted}
                 className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-4 rounded-xl transition-all shadow-md flex items-center justify-center space-x-3 group mx-auto active:scale-[0.98]"
               >
-                <span>Get Your Career Map</span>
+                <span>Launch Your Analysis</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
@@ -175,7 +203,7 @@ export default function Home() {
         {/* FEATURES SECTION */}
         <section
           id="features"
-          className="px-6 py-16 max-w-7xl mx-auto border-t border-slate-200 scroll-mt-20"
+          className="px-6 py-16 max-w-7xl mx-auto border-t border-slate-200 scroll-mt-24"
         >
           <div className="text-center mb-12">
             <span className="font-mono text-xs text-indigo-600 uppercase tracking-[0.2em] block mb-2 font-bold">
@@ -187,16 +215,16 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {systemModules.map((feat) => {
+            {systemModules.map((feat, index) => {
               const Icon = feat.icon;
               return (
                 <div
                   key={feat.title}
-                  className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow group"
+                  className={`render-animate-card delay-${index} bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between transition-all duration-300 cubic-bezier(0.4,0,0.2,1) hover:-translate-y-1.5 hover:shadow-lg hover:border-indigo-100 group`}
                 >
                   <div className="space-y-4">
                     <div
-                      className={`w-12 h-12 ${feat.color} rounded-xl flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform`}
+                      className={`w-12 h-12 ${feat.color} rounded-xl flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform duration-300`}
                     >
                       <Icon className="w-6 h-6" />
                     </div>
@@ -217,11 +245,10 @@ export default function Home() {
           </div>
         </section>
 
-        {/* USER-CENTRIC "HOW IT WORKS" TIMELINE */}
+        {/* HOW IT WORKS SECTION */}
         <section
           id="pipeline"
-          className="px-6 py-16 max-w-7xl mx-auto border-t border-slate-200 scroll-mt-20"
-          className="px-6 py-16 max-w-7xl mx-auto border-t border-slate-200 scroll-mt-20 bg-slate-100/50 rounded-3xl"
+          className="px-6 py-16 max-w-7xl mx-auto border-t border-slate-200 scroll-mt-24 bg-slate-100/50 rounded-3xl"
         >
           <div className="text-center mb-16">
             <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900">
@@ -235,7 +262,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto relative">
             {/* Step 1 */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm relative overflow-hidden group">
+            <div className="render-animate-card delay-0 bg-white border border-slate-200 rounded-2xl p-8 shadow-sm relative overflow-hidden transition-all duration-300 cubic-bezier(0.4,0,0.2,1) hover:-translate-y-1.5 hover:shadow-lg hover:border-indigo-100 group">
               <div className="absolute top-0 right-0 w-16 h-16 bg-slate-50 flex items-center justify-center text-4xl font-bold text-slate-200 group-hover:text-indigo-100 transition-colors">
                 01
               </div>
@@ -252,7 +279,7 @@ export default function Home() {
             </div>
 
             {/* Step 2 */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm relative overflow-hidden group">
+            <div className="render-animate-card delay-1 bg-white border border-slate-200 rounded-2xl p-8 shadow-sm relative overflow-hidden transition-all duration-300 cubic-bezier(0.4,0,0.2,1) hover:-translate-y-1.5 hover:shadow-lg hover:border-indigo-100 group">
               <div className="absolute top-0 right-0 w-16 h-16 bg-slate-50 flex items-center justify-center text-4xl font-bold text-slate-200 group-hover:text-indigo-100 transition-colors">
                 02
               </div>
@@ -269,7 +296,7 @@ export default function Home() {
             </div>
 
             {/* Step 3 */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm relative overflow-hidden group">
+            <div className="render-animate-card delay-2 bg-white border border-slate-200 rounded-2xl p-8 shadow-sm relative overflow-hidden transition-all duration-300 cubic-bezier(0.4,0,0.2,1) hover:-translate-y-1.5 hover:shadow-lg hover:border-indigo-100 group">
               <div className="absolute top-0 right-0 w-16 h-16 bg-slate-50 flex items-center justify-center text-4xl font-bold text-slate-200 group-hover:text-indigo-100 transition-colors">
                 03
               </div>
@@ -288,10 +315,9 @@ export default function Home() {
         </section>
       </main>
 
-      {/* 3. CLEAN USER-CENTRIC FOOTER */}
+      {/* 3. FOOTER */}
       <footer className="bg-slate-950 border-t border-slate-900 py-12 mt-16">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
-          {/* Identity Column */}
           <div className="space-y-4 md:col-span-1 pr-4">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 bg-indigo-500 rounded-lg flex items-center justify-center text-slate-950">
@@ -307,7 +333,6 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Explore Links Block */}
           <div className="space-y-4">
             <h4 className="text-indigo-400 font-bold uppercase tracking-wider text-[11px] font-mono">
               Explore
@@ -332,7 +357,6 @@ export default function Home() {
             </ul>
           </div>
 
-          {/* Legal Links Block */}
           <div className="space-y-4">
             <h4 className="text-indigo-400 font-bold uppercase tracking-wider text-[11px] font-mono">
               Legal
@@ -351,7 +375,6 @@ export default function Home() {
             </ul>
           </div>
 
-          {/* Support & Feedback Column */}
           <div className="space-y-4">
             <h4 className="text-indigo-400 font-bold uppercase tracking-wider text-[11px] font-mono">
               Support & Feedback
@@ -371,7 +394,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Bottom Copyright Bar - Properly Aligned Outside Layout Grid */}
         <div className="max-w-7xl mx-auto px-6 mt-12 pt-6 border-t border-slate-900 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-slate-500 text-[11px] font-medium">
             © {new Date().getFullYear()} CareerCompass. All rights reserved.
