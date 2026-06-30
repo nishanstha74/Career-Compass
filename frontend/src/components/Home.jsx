@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import appLogo from "../assets/Career Compass Logo.png";
@@ -8,12 +8,106 @@ import {
   TrendingUp,
   Map,
   ArrowRight,
-  Cpu,
   Upload,
-  Sparkles,
   ChevronRight,
   FileText,
 } from "lucide-react";
+
+// ---------- Scroll-reveal hook ----------
+// Fires once, the first time the element enters the viewport, then stays revealed.
+function useInView(threshold = 0.15) {
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.unobserve(el);
+        }
+      },
+      { threshold },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [threshold]);
+
+  return [ref, inView];
+}
+
+// ---------- Feature card ----------
+function FeatureCard({ feat, index }) {
+  const [ref, inView] = useInView();
+  const Icon = feat.icon;
+
+  return (
+    <div
+      ref={ref}
+      style={{ transitionDelay: inView ? `${index * 90}ms` : "0ms" }}
+      className={`bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between
+        transition-all duration-700 ease-out
+        hover:-translate-y-1.5 hover:shadow-lg hover:border-indigo-200
+        motion-reduce:transition-none motion-reduce:transform-none
+        group
+        ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+    >
+      <div className="space-y-4">
+        <div
+          className={`w-12 h-12 ${feat.color} rounded-xl flex items-center justify-center shadow-inner
+            transition-transform duration-300 ease-out
+            group-hover:scale-110 group-hover:-rotate-3`}
+        >
+          <Icon className="w-6 h-6" />
+        </div>
+        <h3 className="font-bold text-base text-slate-900 tracking-tight leading-snug transition-colors duration-300 group-hover:text-indigo-600">
+          {feat.title}
+        </h3>
+        <p className="text-xs text-slate-500 leading-relaxed font-medium">
+          {feat.desc}
+        </p>
+      </div>
+      <div className="mt-6 pt-4 border-t border-slate-100 font-mono text-[10px] text-slate-400 font-bold uppercase tracking-wider flex justify-between">
+        <span>Feature:</span>
+        <span className="text-indigo-600">{feat.tag}</span>
+      </div>
+    </div>
+  );
+}
+
+// ---------- "How it works" step card ----------
+function StepCard({ step, index }) {
+  const [ref, inView] = useInView();
+  const Icon = step.icon;
+
+  return (
+    <div
+      ref={ref}
+      style={{ transitionDelay: inView ? `${index * 120}ms` : "0ms" }}
+      className={`bg-white border border-slate-200 rounded-2xl p-8 shadow-sm relative overflow-hidden
+        transition-all duration-700 ease-out
+        hover:-translate-y-1.5 hover:shadow-lg hover:border-indigo-200
+        motion-reduce:transition-none motion-reduce:transform-none
+        group
+        ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+    >
+      <div className="absolute top-0 right-0 w-16 h-16 bg-slate-50 flex items-center justify-center text-4xl font-bold text-slate-200 transition-colors duration-300 group-hover:text-indigo-100">
+        {step.number}
+      </div>
+      <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-6 text-indigo-600 transition-transform duration-300 ease-out group-hover:scale-110">
+        <Icon className="w-5 h-5" />
+      </div>
+      <h3 className="font-bold text-lg text-slate-900 mb-2 transition-colors duration-300 group-hover:text-indigo-600">
+        {step.title}
+      </h3>
+      <p className="text-xs text-slate-500 leading-relaxed">{step.desc}</p>
+    </div>
+  );
+}
 
 export default function Home() {
   const { isLoaded, isSignedIn } = useAuth();
@@ -40,6 +134,15 @@ export default function Home() {
       navigate("/dashboard");
     } else {
       navigate("/signin");
+    }
+  };
+
+  // Smooth-scroll to a section when a nav link is clicked
+  const handleNavClick = (e, id) => {
+    e.preventDefault();
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
@@ -79,36 +182,31 @@ export default function Home() {
     },
   ];
 
+  const pipelineSteps = [
+    {
+      number: "01",
+      icon: Upload,
+      title: "Upload Your CV",
+      desc: "Drop your current resume in PDF format. Our analyzer instantly pulls your technical expertise and background.",
+    },
+    {
+      number: "02",
+      icon: FileText,
+      title: "Reveal Gaps & Matches",
+      desc: "See your best tech career matches based on what you know. Compare your profile with job specs to find key missing skills.",
+    },
+    {
+      number: "03",
+      icon: ChevronRight,
+      title: "Upskill & Track",
+      desc: "Follow your tailor-made study roadmap to master only your missing skills. Tick off phases as you level up.",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-indigo-600 selection:text-white flex flex-col justify-between scroll-smooth">
-      {/* Universal CSS Entry & Hover System */}
-      <style>{`
-        @keyframes fadeInUpCustom {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        /* Auto entry animation rule applied directly to components */
-        .render-animate-card {
-          opacity: 0;
-          animation: fadeInUpCustom 0.5s cubic-bezier(0.215, 0.610, 0.355, 1) forwards;
-        }
-
-        /* Staggered dynamic timeline speeds */
-        .delay-0 { animation-delay: 50ms; }
-        .delay-1 { animation-delay: 150ms; }
-        .delay-2 { animation-delay: 250ms; }
-        .delay-3 { animation-delay: 350ms; }
-      `}</style>
-
-      {/* 1. HEADER */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-50 h-16 flex items-center justify-between px-6 md:px-12">
+      {/* 1. HEADER (DYNAMIC NAVIGATION BAR) */}
+      <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 h-16 flex items-center justify-between px-6 md:px-12 transition-shadow duration-300 hover:shadow-sm">
         <div
           className="flex items-center space-x-3 cursor-pointer group"
           onClick={() => navigate("/")}
@@ -122,7 +220,7 @@ export default function Home() {
           </div>
 
           <div>
-            <span className="font-bold text-base tracking-tight block leading-tight text-slate-900 group-hover:text-indigo-600 transition-colors duration-300">
+            <span className="font-bold text-base tracking-tight block leading-tight text-slate-900 transition-colors duration-300 group-hover:text-indigo-600">
               CareerCompass
             </span>
             <span className="text-[9px] font-mono font-bold tracking-wider text-slate-400 block uppercase">
@@ -131,45 +229,47 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Navigation Links */}
-        <nav className="hidden md:flex items-center gap-8 text-xs font-bold tracking-wider uppercase">
+        {/* Navigation Anchor Links */}
+        <div className="hidden md:flex items-center gap-8 text-xs font-semibold tracking-wider uppercase text-slate-500">
           <a
             href="#features"
-            className="text-slate-500 hover:text-indigo-600 relative py-2 transition-colors duration-300 group"
+            onClick={(e) => handleNavClick(e, "features")}
+            className="relative py-2 group transition-colors duration-300 hover:text-indigo-600"
           >
             Features
-            <span className="absolute bottom-0 left-0 w-full h-[2px] bg-indigo-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-center"></span>
+            <span className="absolute left-0 -bottom-0.5 h-[2px] w-0 bg-indigo-600 transition-all duration-300 group-hover:w-full" />
           </a>
           <a
             href="#pipeline"
-            className="text-slate-500 hover:text-indigo-600 relative py-2 transition-colors duration-300 group"
+            onClick={(e) => handleNavClick(e, "pipeline")}
+            className="relative py-2 group transition-colors duration-300 hover:text-indigo-600"
           >
             How It Works
-            <span className="absolute bottom-0 left-0 w-full h-[2px] bg-indigo-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-center"></span>
+            <span className="absolute left-0 -bottom-0.5 h-[2px] w-0 bg-indigo-600 transition-all duration-300 group-hover:w-full" />
           </a>
-        </nav>
+        </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-4">
           <button
             onClick={handleSignInClick}
-            className="text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 px-4 py-2 rounded-xl transition-all duration-200"
+            className="text-sm font-semibold text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg transition-all duration-300 hover:bg-slate-100"
           >
             Sign In
           </button>
 
           <button
             onClick={handleGetStarted}
-            className="bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all duration-200 shadow-sm shadow-indigo-100 flex items-center space-x-1"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all duration-300 shadow-sm shadow-indigo-100 hover:shadow-md hover:shadow-indigo-200 hover:-translate-y-0.5 flex items-center space-x-1 group active:translate-y-0"
           >
             <span>Get Started</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
           </button>
         </div>
       </header>
 
-      {/* 2. MAIN CORE */}
+      {/* 2. HERO INNER INTERFACE */}
       <main className="flex-1 pt-16">
-        {/* HERO SECTION */}
+        {/* HERO INTRO CONTENT SECTION */}
         <section className="relative px-6 py-16 md:py-24 max-w-7xl mx-auto text-center overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-indigo-500/5 blur-[120px] -z-10 rounded-full" />
 
@@ -191,10 +291,10 @@ export default function Home() {
             <div className="pt-4">
               <button
                 onClick={handleGetStarted}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-4 rounded-xl transition-all shadow-md flex items-center justify-center space-x-3 group mx-auto active:scale-[0.98]"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-indigo-200 flex items-center justify-center space-x-3 group mx-auto active:scale-[0.98] hover:-translate-y-0.5"
               >
-                <span>Launch Your Analysis</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <span>Get Your Career Map</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
               </button>
             </div>
           </div>
@@ -203,7 +303,7 @@ export default function Home() {
         {/* FEATURES SECTION */}
         <section
           id="features"
-          className="px-6 py-16 max-w-7xl mx-auto border-t border-slate-200 scroll-mt-24"
+          className="px-6 py-16 max-w-7xl mx-auto border-t border-slate-200 scroll-mt-20"
         >
           <div className="text-center mb-12">
             <span className="font-mono text-xs text-indigo-600 uppercase tracking-[0.2em] block mb-2 font-bold">
@@ -215,40 +315,16 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {systemModules.map((feat, index) => {
-              const Icon = feat.icon;
-              return (
-                <div
-                  key={feat.title}
-                  className={`render-animate-card delay-${index} bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between transition-all duration-300 cubic-bezier(0.4,0,0.2,1) hover:-translate-y-1.5 hover:shadow-lg hover:border-indigo-100 group`}
-                >
-                  <div className="space-y-4">
-                    <div
-                      className={`w-12 h-12 ${feat.color} rounded-xl flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform duration-300`}
-                    >
-                      <Icon className="w-6 h-6" />
-                    </div>
-                    <h3 className="font-bold text-base text-slate-900 tracking-tight leading-snug">
-                      {feat.title}
-                    </h3>
-                    <p className="text-xs text-slate-500 leading-relaxed font-medium">
-                      {feat.desc}
-                    </p>
-                  </div>
-                  <div className="mt-6 pt-4 border-t border-slate-100 font-mono text-[10px] text-slate-400 font-bold uppercase tracking-wider flex justify-between">
-                    <span>Feature:</span>
-                    <span className="text-indigo-600">{feat.tag}</span>
-                  </div>
-                </div>
-              );
-            })}
+            {systemModules.map((feat, i) => (
+              <FeatureCard feat={feat} index={i} key={feat.title} />
+            ))}
           </div>
         </section>
 
-        {/* HOW IT WORKS SECTION */}
+        {/* USER-CENTRIC "HOW IT WORKS" TIMELINE */}
         <section
           id="pipeline"
-          className="px-6 py-16 max-w-7xl mx-auto border-t border-slate-200 scroll-mt-24 bg-slate-100/50 rounded-3xl"
+          className="px-6 py-16 max-w-7xl mx-auto border-t border-slate-200 scroll-mt-20 bg-slate-100/50 rounded-3xl"
         >
           <div className="text-center mb-16">
             <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900">
@@ -261,67 +337,25 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto relative">
-            {/* Step 1 */}
-            <div className="render-animate-card delay-0 bg-white border border-slate-200 rounded-2xl p-8 shadow-sm relative overflow-hidden transition-all duration-300 cubic-bezier(0.4,0,0.2,1) hover:-translate-y-1.5 hover:shadow-lg hover:border-indigo-100 group">
-              <div className="absolute top-0 right-0 w-16 h-16 bg-slate-50 flex items-center justify-center text-4xl font-bold text-slate-200 group-hover:text-indigo-100 transition-colors">
-                01
-              </div>
-              <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-6 text-indigo-600">
-                <Upload className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-lg text-slate-900 mb-2">
-                Upload Your CV
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Drop your current resume in PDF format. Our analyzer instantly
-                pulls your technical expertise and background.
-              </p>
-            </div>
-
-            {/* Step 2 */}
-            <div className="render-animate-card delay-1 bg-white border border-slate-200 rounded-2xl p-8 shadow-sm relative overflow-hidden transition-all duration-300 cubic-bezier(0.4,0,0.2,1) hover:-translate-y-1.5 hover:shadow-lg hover:border-indigo-100 group">
-              <div className="absolute top-0 right-0 w-16 h-16 bg-slate-50 flex items-center justify-center text-4xl font-bold text-slate-200 group-hover:text-indigo-100 transition-colors">
-                02
-              </div>
-              <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-6 text-indigo-600">
-                <FileText className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-lg text-slate-900 mb-2">
-                Reveal Gaps & Matches
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                See your best tech career matches based on what you know.
-                Compare your profile with job specs to find key missing skills.
-              </p>
-            </div>
-
-            {/* Step 3 */}
-            <div className="render-animate-card delay-2 bg-white border border-slate-200 rounded-2xl p-8 shadow-sm relative overflow-hidden transition-all duration-300 cubic-bezier(0.4,0,0.2,1) hover:-translate-y-1.5 hover:shadow-lg hover:border-indigo-100 group">
-              <div className="absolute top-0 right-0 w-16 h-16 bg-slate-50 flex items-center justify-center text-4xl font-bold text-slate-200 group-hover:text-indigo-100 transition-colors">
-                03
-              </div>
-              <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-6 text-indigo-600">
-                <ChevronRight className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-lg text-slate-900 mb-2">
-                Upskill & Track
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Follow your tailor-made study roadmap to master only your
-                missing skills. Tick off phases as you level up.
-              </p>
-            </div>
+            {pipelineSteps.map((step, i) => (
+              <StepCard step={step} index={i} key={step.title} />
+            ))}
           </div>
         </section>
       </main>
 
-      {/* 3. FOOTER */}
+      {/* 3. CLEAN USER-CENTRIC FOOTER */}
       <footer className="bg-slate-950 border-t border-slate-900 py-12 mt-16">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
+          {/* Identity Column */}
           <div className="space-y-4 md:col-span-1 pr-4">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-indigo-500 rounded-lg flex items-center justify-center text-slate-950">
-                <Compass className="w-4 h-4" />
+              <div className="w-7 h-7 flex items-center justify-center shrink-0">
+                <img
+                  src={appLogo}
+                  alt="CareerCompass Logo"
+                  className="w-full h-full object-contain"
+                />
               </div>
               <span className="font-bold text-white text-sm tracking-tight">
                 CareerCompass
@@ -333,6 +367,7 @@ export default function Home() {
             </p>
           </div>
 
+          {/* Explore Links Block */}
           <div className="space-y-4">
             <h4 className="text-indigo-400 font-bold uppercase tracking-wider text-[11px] font-mono">
               Explore
@@ -341,6 +376,7 @@ export default function Home() {
               <li>
                 <a
                   href="#features"
+                  onClick={(e) => handleNavClick(e, "features")}
                   className="hover:text-indigo-400 transition-colors"
                 >
                   Features
@@ -349,6 +385,7 @@ export default function Home() {
               <li>
                 <a
                   href="#pipeline"
+                  onClick={(e) => handleNavClick(e, "pipeline")}
                   className="hover:text-indigo-400 transition-colors"
                 >
                   How it Works
@@ -357,6 +394,7 @@ export default function Home() {
             </ul>
           </div>
 
+          {/* Legal Links Block */}
           <div className="space-y-4">
             <h4 className="text-indigo-400 font-bold uppercase tracking-wider text-[11px] font-mono">
               Legal
@@ -375,6 +413,7 @@ export default function Home() {
             </ul>
           </div>
 
+          {/* Support & Feedback Column */}
           <div className="space-y-4">
             <h4 className="text-indigo-400 font-bold uppercase tracking-wider text-[11px] font-mono">
               Support & Feedback
@@ -382,18 +421,19 @@ export default function Home() {
             <ul className="space-y-3 text-slate-300 font-medium text-[13px]">
               <li>
                 <a href="#" className="hover:text-indigo-400 transition-colors">
-                  Contact Support
+                  Contact Us
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-indigo-400 transition-colors">
-                  Give Feedback / Report a Bug
+                  Give Feedback
                 </a>
               </li>
             </ul>
           </div>
         </div>
 
+        {/* Bottom Copyright Bar - Properly Aligned Outside Layout Grid */}
         <div className="max-w-7xl mx-auto px-6 mt-12 pt-6 border-t border-slate-900 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-slate-500 text-[11px] font-medium">
             © {new Date().getFullYear()} CareerCompass. All rights reserved.
