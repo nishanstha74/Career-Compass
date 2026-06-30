@@ -5,7 +5,7 @@ import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import Dashboard from "./components/Dashboard";
 import Home from "./components/Home";
-
+import FeedbackModal from "./components/FeedbackModal";
 // Protected Route: Instantly checks if user is signed in, no full-screen loading block
 function ProtectedRoute({ children }) {
   const { isLoaded, isSignedIn } = useUser();

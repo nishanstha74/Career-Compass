@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import appLogo from "../assets/Career Compass Logo.png";
+import FeedbackModal from "./FeedbackModal";
 import {
   Compass,
   CheckCircle,
@@ -112,6 +113,7 @@ function StepCard({ step, index }) {
 export default function Home() {
   const { isLoaded, isSignedIn } = useAuth();
   const navigate = useNavigate();
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   // Automatically push the user to the dashboard if a valid login session exists
   useEffect(() => {
@@ -240,8 +242,8 @@ export default function Home() {
             <span className="absolute left-0 -bottom-0.5 h-[2px] w-0 bg-indigo-600 transition-all duration-300 group-hover:w-full" />
           </a>
           <a
-            href="#pipeline"
-            onClick={(e) => handleNavClick(e, "pipeline")}
+            href="#how-it-works"
+            onClick={(e) => handleNavClick(e, "how-it-works")}
             className="relative py-2 group transition-colors duration-300 hover:text-indigo-600"
           >
             How It Works
@@ -323,7 +325,7 @@ export default function Home() {
 
         {/* USER-CENTRIC "HOW IT WORKS" TIMELINE */}
         <section
-          id="pipeline"
+          id="how-it-works"
           className="px-6 py-16 max-w-7xl mx-auto border-t border-slate-200 scroll-mt-20 bg-slate-100/50 rounded-3xl"
         >
           <div className="text-center mb-16">
@@ -384,8 +386,8 @@ export default function Home() {
               </li>
               <li>
                 <a
-                  href="#pipeline"
-                  onClick={(e) => handleNavClick(e, "pipeline")}
+                  href="#how-it-works"
+                  onClick={(e) => handleNavClick(e, "how-it-works")}
                   className="hover:text-indigo-400 transition-colors"
                 >
                   How it Works
@@ -420,14 +422,21 @@ export default function Home() {
             </h4>
             <ul className="space-y-3 text-slate-300 font-medium text-[13px]">
               <li>
-                <a href="#" className="hover:text-indigo-400 transition-colors">
+                <a
+                  href="mailto:support@careercompass.com"
+                  className="hover:text-indigo-400 transition-colors"
+                >
                   Contact Us
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-indigo-400 transition-colors">
+                <button
+                  type="button"
+                  onClick={() => setFeedbackOpen(true)}
+                  className="hover:text-indigo-400 transition-colors text-left"
+                >
                   Give Feedback
-                </a>
+                </button>
               </li>
             </ul>
           </div>
@@ -443,6 +452,11 @@ export default function Home() {
           </p>
         </div>
       </footer>
+
+      <FeedbackModal
+        open={feedbackOpen}
+        onClose={() => setFeedbackOpen(false)}
+      />
     </div>
   );
 }
