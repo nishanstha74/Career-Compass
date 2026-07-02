@@ -1,37 +1,32 @@
 {
   "contact": {
-    "email": "xxxxxx@gmail.com",
-    "phone": ""
+    "email": "support@resumod.co",
+    "phone": "9953776253"
   },
   "education": {
-    "raw": "Stanford University\nM.S. in Computer Science 2008 - 2009",
+    "raw": "B.Tech in Computer Science | Pursuing\nCollege of Technology and Engineering, Udaipur",
     "institutions": [
-      "Stanford University\nM.S. in Computer Science"
+      "B.Tech",
+      "Computer Science"
     ],
-    "dates": [
-      "2008 - 2009"
-    ]
+    "dates": []
   },
   "experience": {
-    "raw": "Boyle\nSenior Full Stack Developer 2018 - Present\nBoyle is an international Technology and Management Consulting Group with a rapid pace development and innovative solutions for demanding",
-    "companies": [
-      "Technology and Management Consulting Group"
-    ],
-    "dates": [
-      "2018"
-    ]
+    "raw": "",
+    "companies": [],
+    "dates": []
   },
   "skills": {
-    "raw": "Client-Side; HTML. CSS -+JS + Angular - React - Vue - Redux - TypeScript - Backbone - Bootstrap\n\nServer-side; Python - NumPy - SciPy - Scikit-learn - Keras - EliS - TensorFlow - MySQL - NodeJS - Redis - AWS - MongoDB - Spark\n\nDevelopment & Operations; JUnit - NUnit - PyUnit - TestCafe - Mocha - Jest - Scrum - Agile - GIT - Azure DevOps\n\nOPEN SOURCE WORK\n\nOpenFlow based Firewall\nhttps://github.com/danette.east/OpenFlow-Firewall 08/2012 - 12/2013\nOpenFlow protocol-based proactive Firewall in Python and NodeJS.\n\nConfigured static rules using MD-SAL\nEngineered proactive rule evaluation system at OSI layer 7 using POX controller\nProvided flexibility to configure rule using centralised NodeJS based GUI\n\nwwwenhancv.com Powered by (CX? Enhnancu"
+    "raw": ""
   },
   "projects": {
-    "raw": "Hired, trained and leading an Agile team of 7 full-stack developers\n\nDeveloped indexed database architecture using SOL procedures and triggers for 10 different applications\n\nWorked with Core Java to develop automated solutions to include web interfaces using HTML, CSS, JavaScript and Web services\n\nWorked with a committee of 6 members to organize fun-activities for the employees\n\nLauzon\nFull Stack Developer 2013 - 2018\nLauzon is a universal digital loyalty program that offers unique and fun rewards at the places you love.\nHired, trained and lead Agile team of 7 full-stack developers\nSimultaneously created & maintained scheduled jobs in SOL Server for space maintenance and daily backups of system and user databases for\n10 clients\nIncreased company revenue by 30% within 2 months after developing and implementing business logic for over 20 features\nDesigned and Developed UI design for over 15 clients using CSS, HTML, ASP.NET, Vue, and React; websites scoring over 85 on Lighthouse"
+    "raw": "¢ Competed in ACM ICPC, which helped improve algorithmic skills.\n\ne Participated in Google Code Jam, and secured 2nd position."
   },
   "certifications": "",
-  "languages": "",
-  "summary": "Full Stack Developer with over 10 years of experience in Java/JS, Angular, Vue, React, Python, NumPy, SciPy, Scikit-learn. Led development of $500K\nresearch project which was deemed a “gold standard\" by the client. Increased client's revenue 2-fold after fine-tuning Al/ML-based algorithms.\nWell-acquainted with HR methodologies.",
+  "languages": "English\n\nTANYA\nSHAH\n\nSoftware Development Intern\n\nAn enthusiastic software development intern with a strong foundation in\ncomputer science and hands- on experience in coding, debugging, and\ncollaborating on software projects. Proficient in programming languages such\nas Python, Java, and JavaScript, with a solid understanding of web\ndevelopment technologies including HTML, CSS, and Reactjs. Excellent\nproblem-solving abilities, attention to detail, and a passion for learning new",
+  "summary": "",
   "_meta": {
     "method": "spacy",
-    "confidence": 1.0
+    "confidence": 0.5
   }
 }

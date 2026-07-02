@@ -1,59 +1,109 @@
-ELLIE THOMPSON
+PERSONAL INFO
 
-Full stack Developer
-+1-555-555-5555 © xxxxxx@gmail.com * github.io/xxxxx * San Fransisco, CA
+Address
+Udaipur, India
 
-Summary
+Phone
++9]-9953776253
 
-Full Stack Developer with over 10 years of experience in Java/JS, Angular, Vue, React, Python, NumPy, SciPy, Scikit-learn. Led development of $500K
-research project which was deemed a “gold standard" by the client. Increased client's revenue 2-fold after fine-tuning Al/ML-based algorithms.
-Well-acquainted with HR methodologies.
+Email
+support@resumod.co
 
-Experience
+LinkedIn
+www.linkedin.com/in/tanya
 
-Boyle
-Senior Full Stack Developer 2018 - Present
-Boyle is an international Technology and Management Consulting Group with a rapid pace development and innovative solutions for demanding
-projects. | work as a full-stack developer here, responsible for building, deploying and maintaining internal web applications.
+SKILLS
 
-Hired, trained and leading an Agile team of 7 full-stack developers
+JavaScripts
 
-Developed indexed database architecture using SOL procedures and triggers for 10 different applications
+C++/C
 
-Worked with Core Java to develop automated solutions to include web interfaces using HTML, CSS, JavaScript and Web services
+Web Development
 
-Worked with a committee of 6 members to organize fun-activities for the employees
+Database Management
 
-Lauzon
-Full Stack Developer 2013 - 2018
-Lauzon is a universal digital loyalty program that offers unique and fun rewards at the places you love.
-Hired, trained and lead Agile team of 7 full-stack developers
-Simultaneously created & maintained scheduled jobs in SOL Server for space maintenance and daily backups of system and user databases for
-10 clients
-Increased company revenue by 30% within 2 months after developing and implementing business logic for over 20 features
-Designed and Developed UI design for over 15 clients using CSS, HTML, ASP.NET, Vue, and React; websites scoring over 85 on Lighthouse
+Version Control
 
-Education
+Algorithmic and Data Structures
 
-Stanford University
-M.S. in Computer Science 2008 - 2009
+Software Development Lifecycle
 
-Skills
+Testing and Debugging
 
-Client-Side; HTML. CSS -+JS + Angular - React - Vue - Redux - TypeScript - Backbone - Bootstrap
+Strong Communication
 
-Server-side; Python - NumPy - SciPy - Scikit-learn - Keras - EliS - TensorFlow - MySQL - NodeJS - Redis - AWS - MongoDB - Spark
+Qa
+2)
+Cc
+Ps)
+2)
+m
+7)
 
-Development & Operations; JUnit - NUnit - PyUnit - TestCafe - Mocha - Jest - Scrum - Agile - GIT - Azure DevOps
+Mastering Software
+Development Lifecycle
+Coursera
 
-OPEN SOURCE WORK
+2024
 
-OpenFlow based Firewall
-https://github.com/danette.east/OpenFlow-Firewall 08/2012 - 12/2013
-OpenFlow protocol-based proactive Firewall in Python and NodeJS.
+LANGUAGES
 
-Configured static rules using MD-SAL
-Engineered proactive rule evaluation system at OSI layer 7 using POX controller
-Provided flexibility to configure rule using centralised NodeJS based GUI
+English
 
-wwwenhancv.com Powered by (CX? Enhnancu
+TANYA
+SHAH
+
+Software Development Intern
+
+An enthusiastic software development intern with a strong foundation in
+computer science and hands- on experience in coding, debugging, and
+collaborating on software projects. Proficient in programming languages such
+as Python, Java, and JavaScript, with a solid understanding of web
+development technologies including HTML, CSS, and Reactjs. Excellent
+problem-solving abilities, attention to detail, and a passion for learning new
+
+technologies and best practices in software development.
+
+EDUCATION
+
+B.Tech in Computer Science | Pursuing
+College of Technology and Engineering, Udaipur
+
+PROJECTS
+
+Web Application Development | May 2024
+
+e Developed a web application using modern frameworks like Reactjs,
+Angular, or Vue.js. Worked on building a simple CRUD (Create, Read, Update,
+
+Delete) application, depending on their consumer interactions and interests.
+
+Database Management | Dec 2023
+
+e Worked on database- related projects such as database design,
+normalisation, indexing, or optimising SQL queries. Also worked on setting
+
+up and managing NoSQL databases like MongoDB or Firebase.
+
+Data Analysis and Visualisation | Oct 2023
+
+e Developed project involving data analysis and visualisation using libraries
+like Pandas, NumPy, Matplotlib, or D3.js.
+
+e Analysed datasets, create visualizations, and derive insights from the data.
+
+Extra Curricular Activities
+
+e Writing technical blog posts for university's website which help students
+solidify their understanding of concepts and technologies while sharing
+their knowledge with others.
+
+e Volunteering for non-profit organisations, and providing them with technical
+support and assistance.
+
+e Participated in hackathons allows students to work on intensive coding
+projects within a short timeframe.
+
+¢ Competed in ACM ICPC, which helped improve algorithmic skills.
+
+e Participated in Google Code Jam, and secured 2nd position.

@@ -285,7 +285,7 @@ def extract_resume_text(file_path, lang='eng'):
 
 
 if __name__ == "__main__":
-    file_path = "mock/CV2.jpeg"  # or "resume.docx"
+    file_path = "mock/CV1.jpeg"  # or "resume.docx"
 
     text, method, report = extract_resume_text(file_path)
 
