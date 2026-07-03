@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
-import appLogo from "../assets/Career Compass Logo.png";
-import FeedbackModal from "./FeedbackModal";
+import appLogo from "../../assets/Career Compass Logo.png";
+import FeedbackModal from "../modals/FeedbackModal";
 import {
   Compass,
   CheckCircle,

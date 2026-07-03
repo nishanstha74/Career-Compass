@@ -1,11 +1,11 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useUser, AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
-import SignIn from "./components/SignIn";
-import SignUp from "./components/SignUp";
-import Dashboard from "./components/Dashboard";
-import Home from "./components/Home";
-import FeedbackModal from "./components/FeedbackModal";
+import SignIn from "./components/auth/SignIn";
+import SignUp from "./components/auth/SignUp";
+import Dashboard from "./components/pages/Dashboard";
+import Home from "./components/pages/Home";
+import FeedbackModal from "./components/modals/FeedbackModal";
 // Protected Route: Instantly checks if user is signed in, no full-screen loading block
 function ProtectedRoute({ children }) {
   const { isLoaded, isSignedIn } = useUser();
