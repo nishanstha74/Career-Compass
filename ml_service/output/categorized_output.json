@@ -1,4 +1,5 @@
 {
+  "name": "",
   "contact": {
     "email": "support@resumod.co",
     "phone": "9953776253"
@@ -17,16 +18,20 @@
     "dates": []
   },
   "skills": {
-    "raw": ""
+    "raw": "JavaScripts\n\nC++/C\n\nWeb Development\n\nDatabase Management\n\nVersion Control\n\nAlgorithmic and Data Structures\n\nSoftware Development Lifecycle\n\nTesting and Debugging\n\nStrong Communication\n\nQa\n2)\nCc\nPs)\n2)\nm\n7)\n\nMastering Software\nDevelopment Lifecycle\nCoursera\n\n2024"
   },
   "projects": {
-    "raw": "¢ Competed in ACM ICPC, which helped improve algorithmic skills.\n\ne Participated in Google Code Jam, and secured 2nd position."
+    "raw": "Web Application Development | May 2024\n\ne Developed a web application using modern frameworks like Reactjs,\nAngular, or Vue.js. Worked on building a simple CRUD (Create, Read, Update,\n\nDelete) application, depending on their consumer interactions and interests.\n\nDatabase Management | Dec 2023\n\ne Worked on database- related projects such as database design,\nnormalisation, indexing, or optimising SQL queries. Also worked on setting\n\nup and managing NoSQL databases like MongoDB or Firebase.\n\nData Analysis and Visualisation | Oct 2023\n\ne Developed project involving data analysis and visualisation using libraries\nlike Pandas, NumPy, Matplotlib, or D3.js.\n\ne Analysed datasets, create visualizations, and derive insights from the data.\n¢ Competed in ACM ICPC, which helped improve algorithmic skills.\n\ne Participated in Google Code Jam, and secured 2nd position."
   },
   "certifications": "",
   "languages": "English\n\nTANYA\nSHAH\n\nSoftware Development Intern\n\nAn enthusiastic software development intern with a strong foundation in\ncomputer science and hands- on experience in coding, debugging, and\ncollaborating on software projects. Proficient in programming languages such\nas Python, Java, and JavaScript, with a solid understanding of web\ndevelopment technologies including HTML, CSS, and Reactjs. Excellent\nproblem-solving abilities, attention to detail, and a passion for learning new",
   "summary": "",
+  "leadership": "",
+  "achievements": "",
+  "references": "",
+  "activities": "e Writing technical blog posts for university's website which help students\nsolidify their understanding of concepts and technologies while sharing\ntheir knowledge with others.\n\ne Volunteering for non-profit organisations, and providing them with technical\nsupport and assistance.\n\ne Participated in hackathons allows students to work on intensive coding",
   "_meta": {
     "method": "spacy",
-    "confidence": 0.5
+    "confidence": 0.75
   }
 }

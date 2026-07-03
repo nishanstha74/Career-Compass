@@ -12,12 +12,8 @@ import os
 env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "key.env")
 load_dotenv(dotenv_path=env_path)
 
-# load_dotenv()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-print("KEY FOUND:", os.getenv("GEMINI_API_KEY"))  # debug line
-
-# client = genai.Client(api_key="AQ.Ab8RN6KFkBqOHR2xgHUR_gzev0SCb8RFgZlIRfN-xjuxcL2F4A")
 nlp = spacy.load("en_core_web_sm")
 
 # Expected sections — used to calculate spaCy confidence score
@@ -32,7 +28,8 @@ SECTION_HEADERS = {
     "experience":     ["experience", "work experience", "professional experience",
                        "employment history", "career history", "work history"],
     "skills":         ["skills", "technical skills", "core competencies",
-                       "competencies", "key skills", "technologies"],
+                       "competencies", "key skills", "technologies", "tech stack",
+                       "skillset", "technical proficiencies", "areas of expertise"],
     "projects":       ["projects", "personal projects", "academic projects",
                        "key projects", "notable projects"],
     "certifications": ["certifications", "certificates", "courses",
@@ -40,7 +37,27 @@ SECTION_HEADERS = {
     "languages":      ["languages", "language proficiency", "spoken languages"],
     "summary":        ["summary", "objective", "profile", "about me",
                        "career objective", "professional summary"],
+    # previously missing — these were silently swallowed into whatever
+    # section was open before them (e.g. "education" absorbing everything
+    # after it because the code had no bucket to put them in)
+    "leadership":     ["leadership", "leadership experience"],
+    "achievements":   ["achievements", "awards", "honors", "honours",
+                       "accomplishments"],
+    "references":     ["references"],
+    "activities":     ["extracurricular", "extra curricular", "activities",
+                       "volunteer", "volunteering"],
 }
+
+
+# ─── HEADER CLEANING HELPER ────────────────────────────────────────────────────
+
+def _clean_header_line(stripped: str) -> str:
+    """
+    Strips leading bullet/icon characters, colons, and stray symbols that
+    otherwise break exact/startswith header matching
+    (e.g. "▪ SKILLS" would never match "skills" without this).
+    """
+    return re.sub(r'^[•●▪\-\*\u2022\u25aa\u25cf:\s]+', '', stripped).strip()
 
 
 # ─── STAGE 1: spaCy SECTION SPLITTER ──────────────────────────────────────────
@@ -65,18 +82,23 @@ def detect_sections_spacy(text):
             current_lines.append(line)
             continue
 
+        cleaned = _clean_header_line(stripped)
         matched_section = None
 
         # Check if this line matches any known section header
         for section, keywords in SECTION_HEADERS.items():
-            if any(stripped == kw or stripped.startswith(kw) for kw in keywords):
+            if any(cleaned == kw or cleaned.startswith(kw) for kw in keywords):
                 matched_section = section
                 break
 
         if matched_section:
             # Save previous section before starting new one
             if current_lines:
-                sections[current_section] = "\n".join(current_lines).strip()
+                # Append to existing content if this section was already seen
+                # before (e.g. resume has two separate blocks under "skills")
+                existing = sections.get(current_section, "")
+                new_chunk = "\n".join(current_lines).strip()
+                sections[current_section] = (existing + "\n" + new_chunk).strip() if existing else new_chunk
             current_section = matched_section
             current_lines = []
         else:
@@ -84,7 +106,9 @@ def detect_sections_spacy(text):
 
     # Save last section
     if current_lines:
-        sections[current_section] = "\n".join(current_lines).strip()
+        existing = sections.get(current_section, "")
+        new_chunk = "\n".join(current_lines).strip()
+        sections[current_section] = (existing + "\n" + new_chunk).strip() if existing else new_chunk
 
     found = [s for s in EXPECTED_SECTIONS if s in sections and sections[s].strip()]
     confidence = len(found) / len(EXPECTED_SECTIONS)
@@ -104,10 +128,14 @@ def extract_entities_spacy(sections):
     # Extract candidate name from header/contact section
     header_text = sections.get("header", "") + " " + sections.get("contact", "")
     doc = nlp(header_text)
+    name_found = ""
     for ent in doc.ents:
-        if ent.label_ == "PERSON":
-            result["name"] = ent.text
+        # Require at least a first + last name (2+ words) to avoid
+        # single-word false positives like "Nepal" being tagged PERSON
+        if ent.label_ == "PERSON" and len(ent.text.split()) >= 2:
+            name_found = ent.text
             break
+    result["name"] = name_found
 
     # Extract contact info using regex (more reliable than NER for these)
     full_text = " ".join(sections.values())
@@ -158,6 +186,13 @@ def extract_entities_spacy(sections):
 
     # Summary
     result["summary"] = sections.get("summary", "")
+
+    # Newly captured sections that used to silently bleed into
+    # whichever section happened to be open before them
+    result["leadership"] = sections.get("leadership", "")
+    result["achievements"] = sections.get("achievements", "")
+    result["references"] = sections.get("references", "")
+    result["activities"] = sections.get("activities", "")
 
     return result
 
@@ -235,18 +270,28 @@ Resume text:
 def merge_results(spacy_result, gemini_result):
     """
     Merges spaCy and Gemini results.
-    Gemini fills in what spaCy missed; spaCy's entity extractions are kept.
+    Gemini fills in what spaCy missed; spaCy's entity-level extractions
+    (email/phone) are kept since regex is generally more reliable than
+    an LLM for those specific fixed-format fields.
     """
     if not gemini_result:
-        return spacy_result
+        return spacy_result  # fixed: was "spacy_result4" (undefined variable, crash bug)
 
     merged = gemini_result.copy()
 
     # Keep spaCy's entity-level detail where Gemini only has raw text
     if spacy_result.get("contact", {}).get("email"):
+        merged.setdefault("contact", {})
         merged["contact"]["email"] = spacy_result["contact"]["email"]
     if spacy_result.get("contact", {}).get("phone"):
+        merged.setdefault("contact", {})
         merged["contact"]["phone"] = spacy_result["contact"]["phone"]
+
+    # Carry over sections Gemini's fixed schema doesn't ask for at all
+    merged["leadership"] = spacy_result.get("leadership", "")
+    merged["achievements"] = spacy_result.get("achievements", "")
+    merged["references"] = spacy_result.get("references", "")
+    merged["activities"] = spacy_result.get("activities", "")
 
     return merged
 
