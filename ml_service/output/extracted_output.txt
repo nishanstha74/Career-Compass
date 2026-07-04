@@ -1,109 +1,55 @@
-PERSONAL INFO
+SHRUTI PATHAK
 
-Address
-Udaipur, India
+Data Annotator
 
-Phone
-+9]-9953776253
+Education
+LVYVUN OLS
 
-Email
-support@resumod.co
+2022 Data Annotation for AI at DY Patil Institute of Technology
 
-LinkedIn
-www.linkedin.com/in/tanya
+EXTRA CURRICULAR ACTIVITIES
 
-SKILLS
+e Participated in ACM ICPC coding competition, and secured 3rd Position.
+e Appointed as a Team Leader of AI Club-SRM University.
+e Secured 2nd Position in Hackathon 2021.
 
-JavaScripts
+Experience
+PLOYMENT HISTORY
 
-C++/C
+Data Annotator | Expertia AI| Chennai
+Jun 2023 - Present
 
-Web Development
+e Accurately annotating and labelling data according to predefined guidelines and specifications,
+ensuring high-quality and consistent annotations for machine learning and data analysis purposes.
+Conducting thorough quality checks and validations on annotated data to identify and rectify any
+errors or inconsistencies, maintaining data integrity and reliability.
+Analysing annotated data to identify patterns, trends, and insights, providing valuable input to
+improve annotation processes and enhance data quality.
+e Documenting annotation processes, guidelines, and best practices, ensuring clear and
+comprehensive documentation for reference and training purposes.
+Collaborating with cross-functional teams, including data scientists, machine learning engineers,
+and project managers, to understand project requirements and provide support as needed.
+Providing feedback and suggestions for process improvements and optimisations to streamline
+annotation workflows and increase efficiency.
 
-Database Management
+ERNSHIPS
 
-Version Control
+Intern Data Annotator | Stark Technologies | Chennai
+Aug 2022 - Mar 2023
+e Assisted researchers to determine and understand input data and annotated by drawing boxes to
+highlight areas of interest in images.
+e Supported researchers in training deep learning models through accurately categorising content,
+labeling images, and annotating data.
+e Reported and documented issues faced from data annotation to research team and discuss
+solutions to improve data.
 
-Algorithmic and Data Structures
+UCATION
+2 B.Tech in Computer Science -> SRM University, Chennai
+Projects Undertook-
 
-Software Development Lifecycle
+e A Personal Assistant: Created a simple stand-alone application that helps less tech savvy people in
+the world to use the computer without feeling ignorant or computer illiterate.
 
-Testing and Debugging
-
-Strong Communication
-
-Qa
-2)
-Cc
-Ps)
-2)
-m
-7)
-
-Mastering Software
-Development Lifecycle
-Coursera
-
-2024
-
-LANGUAGES
-
-English
-
-TANYA
-SHAH
-
-Software Development Intern
-
-An enthusiastic software development intern with a strong foundation in
-computer science and hands- on experience in coding, debugging, and
-collaborating on software projects. Proficient in programming languages such
-as Python, Java, and JavaScript, with a solid understanding of web
-development technologies including HTML, CSS, and Reactjs. Excellent
-problem-solving abilities, attention to detail, and a passion for learning new
-
-technologies and best practices in software development.
-
-EDUCATION
-
-B.Tech in Computer Science | Pursuing
-College of Technology and Engineering, Udaipur
-
-PROJECTS
-
-Web Application Development | May 2024
-
-e Developed a web application using modern frameworks like Reactjs,
-Angular, or Vue.js. Worked on building a simple CRUD (Create, Read, Update,
-
-Delete) application, depending on their consumer interactions and interests.
-
-Database Management | Dec 2023
-
-e Worked on database- related projects such as database design,
-normalisation, indexing, or optimising SQL queries. Also worked on setting
-
-up and managing NoSQL databases like MongoDB or Firebase.
-
-Data Analysis and Visualisation | Oct 2023
-
-e Developed project involving data analysis and visualisation using libraries
-like Pandas, NumPy, Matplotlib, or D3.js.
-
-e Analysed datasets, create visualizations, and derive insights from the data.
-
-Extra Curricular Activities
-
-e Writing technical blog posts for university's website which help students
-solidify their understanding of concepts and technologies while sharing
-their knowledge with others.
-
-e Volunteering for non-profit organisations, and providing them with technical
-support and assistance.
-
-e Participated in hackathons allows students to work on intensive coding
-projects within a short timeframe.
-
-¢ Competed in ACM ICPC, which helped improve algorithmic skills.
-
-e Participated in Google Code Jam, and secured 2nd position.
+¢ The application works same like Siri/ Google Assistant etc. But the application deals with the
+computer itself mainly. The U.I of the application is self- explanatory and minimal. Currently it
+takes text as input as most of the people are not very good at speaking.

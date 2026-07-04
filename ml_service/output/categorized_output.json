@@ -1,35 +1,44 @@
 {
   "name": "",
   "contact": {
-    "email": "support@resumod.co",
-    "phone": "9953776253"
+    "email": "",
+    "phone": ""
   },
   "education": {
-    "raw": "B.Tech in Computer Science | Pursuing\nCollege of Technology and Engineering, Udaipur",
+    "raw": "LVYVUN OLS\n\n2022 Data Annotation for AI at DY Patil Institute of Technology",
     "institutions": [
-      "B.Tech",
-      "Computer Science"
+      "Data Annotation for AI",
+      "DY Patil Institute of Technology"
     ],
     "dates": []
   },
   "experience": {
-    "raw": "",
-    "companies": [],
-    "dates": []
+    "raw": "PLOYMENT HISTORY\n\nData Annotator | Expertia AI| Chennai\nJun 2023 - Present\n\ne Accurately annotating and labelling data according to predefined guidelines and specifications,\nensuring high-quality and consistent annotations for machine learning and data analysis purposes.\nConducting thorough quality checks and validations on annotated data to identify and rectify any\nerrors or inconsistencies, maintaining data integrity and reliability.\nAnalysing annotated data to identify patterns, trends, and insights, providing valuable input to\nimprove annotation processes and enhance data quality.\ne Documenting annotation processes, guidelines, and best practices, ensuring clear and\ncomprehensive documentation for reference and training purposes.\nCollaborating with cross-functional teams, including data scientists, machine learning engineers,\nand project managers, to understand project requirements and provide support as needed.\nProviding feedback and suggestions for process improvements and optimisations to streamline\nannotation workflows and increase efficiency.\n\nERNSHIPS\n\nIntern Data Annotator | Stark Technologies | Chennai\nAug 2022 - Mar 2023\ne Assisted researchers to determine and understand input data and annotated by drawing boxes to\nhighlight areas of interest in images.\ne Supported researchers in training deep learning models through accurately categorising content,\nlabeling images, and annotating data.\ne Reported and documented issues faced from data annotation to research team and discuss\nsolutions to improve data.\n\nUCATION\n2 B.Tech in Computer Science -> SRM University, Chennai",
+    "companies": [
+      "Expertia",
+      "Intern Data",
+      "Assisted",
+      "Computer Science -> SRM University",
+      "Chennai"
+    ],
+    "dates": [
+      "2023 - Present",
+      "2022 - Mar 2023"
+    ]
   },
   "skills": {
-    "raw": "JavaScripts\n\nC++/C\n\nWeb Development\n\nDatabase Management\n\nVersion Control\n\nAlgorithmic and Data Structures\n\nSoftware Development Lifecycle\n\nTesting and Debugging\n\nStrong Communication\n\nQa\n2)\nCc\nPs)\n2)\nm\n7)\n\nMastering Software\nDevelopment Lifecycle\nCoursera\n\n2024"
+    "raw": ""
   },
   "projects": {
-    "raw": "Web Application Development | May 2024\n\ne Developed a web application using modern frameworks like Reactjs,\nAngular, or Vue.js. Worked on building a simple CRUD (Create, Read, Update,\n\nDelete) application, depending on their consumer interactions and interests.\n\nDatabase Management | Dec 2023\n\ne Worked on database- related projects such as database design,\nnormalisation, indexing, or optimising SQL queries. Also worked on setting\n\nup and managing NoSQL databases like MongoDB or Firebase.\n\nData Analysis and Visualisation | Oct 2023\n\ne Developed project involving data analysis and visualisation using libraries\nlike Pandas, NumPy, Matplotlib, or D3.js.\n\ne Analysed datasets, create visualizations, and derive insights from the data.\n¢ Competed in ACM ICPC, which helped improve algorithmic skills.\n\ne Participated in Google Code Jam, and secured 2nd position."
+    "raw": "e A Personal Assistant: Created a simple stand-alone application that helps less tech savvy people in\nthe world to use the computer without feeling ignorant or computer illiterate.\n\n¢ The application works same like Siri/ Google Assistant etc. But the application deals with the\ncomputer itself mainly. The U.I of the application is self- explanatory and minimal. Currently it\ntakes text as input as most of the people are not very good at speaking."
   },
   "certifications": "",
-  "languages": "English\n\nTANYA\nSHAH\n\nSoftware Development Intern\n\nAn enthusiastic software development intern with a strong foundation in\ncomputer science and hands- on experience in coding, debugging, and\ncollaborating on software projects. Proficient in programming languages such\nas Python, Java, and JavaScript, with a solid understanding of web\ndevelopment technologies including HTML, CSS, and Reactjs. Excellent\nproblem-solving abilities, attention to detail, and a passion for learning new",
+  "languages": "",
   "summary": "",
   "leadership": "",
   "achievements": "",
   "references": "",
-  "activities": "e Writing technical blog posts for university's website which help students\nsolidify their understanding of concepts and technologies while sharing\ntheir knowledge with others.\n\ne Volunteering for non-profit organisations, and providing them with technical\nsupport and assistance.\n\ne Participated in hackathons allows students to work on intensive coding",
+  "activities": "e Participated in ACM ICPC coding competition, and secured 3rd Position.\ne Appointed as a Team Leader of AI Club-SRM University.\ne Secured 2nd Position in Hackathon 2021.",
   "_meta": {
     "method": "spacy",
     "confidence": 0.75

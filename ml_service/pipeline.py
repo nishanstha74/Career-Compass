@@ -56,7 +56,7 @@ if __name__ == "__main__":
     train_job_matcher(sample_jobs)
 
     # ── Step 2: Process a resume and get matches ──
-    resume_path = "mock/CV1.jpeg"
+    resume_path = "mock/resume02.jpeg"
     matches = get_job_matches(resume_path, top_n=5)
 
     print("\nTop job matches:")
