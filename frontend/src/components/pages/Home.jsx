@@ -423,7 +423,9 @@ export default function Home() {
             <ul className="space-y-3 text-slate-300 font-medium text-[13px]">
               <li>
                 <a
-                  href="mailto:support@careercompass.com"
+                  href="https://mail.google.com/mail/?view=cm&fs=1&to=shrestha.nishan060@gmail.com&su=CareerCompass%20Inquiry"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="hover:text-indigo-400 transition-colors"
                 >
                   Contact Us
