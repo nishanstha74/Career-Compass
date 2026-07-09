@@ -127,7 +127,7 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == "__main__":
     path = sys.argv[1] if len(sys.argv) > 1 else "resume_data.csv"
-    df = pd.read_csv(path)
+    df = pd.read_csv("D:/PROJECT/Career-Compass/ml_service/dataset/resume_data.csv")
     feats = build_features(df)
     print(feats.drop(columns=["resume_text", "job_text"]).describe())
     print("\nSample rows:")
