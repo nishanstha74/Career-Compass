@@ -1,115 +1,372 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserPlus, User, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import {
+  User,
+  UserPlus,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  AlertCircle,
+} from "lucide-react";
 
 export default function SignUp() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
 
-  const handleSubmit = (e) => {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  const validateField = (fieldName, value, forceTouched = false) => {
+    const nextErrors = { ...errors };
+    const isFieldTouched = forceTouched || touched[fieldName];
+
+    if (fieldName === "name") {
+      if (isFieldTouched && value.trim() === "") {
+        nextErrors.name = "Please enter your name.";
+      } else {
+        delete nextErrors.name;
+      }
+    }
+
+    if (fieldName === "email") {
+      if (isFieldTouched) {
+        if (!emailRegex.test(value)) {
+          nextErrors.email = "Please enter a valid email address.";
+        } else {
+          delete nextErrors.email;
+        }
+      }
+    }
+
+    if (fieldName === "password") {
+      if (isFieldTouched) {
+        if (
+          value.length < 8 ||
+          !/[A-Z]/.test(value) ||
+          !/[0-9]/.test(value) ||
+          !/[@$!%*?&]/.test(value)
+        ) {
+          nextErrors.password =
+            "Password must be 8+ characters with an uppercase letter, a number, and a special character.";
+        } else {
+          delete nextErrors.password;
+        }
+      }
+
+      if (touched.confirmPassword && confirmPassword !== value) {
+        nextErrors.confirmPassword = "Passwords do not match.";
+      } else if (touched.confirmPassword && confirmPassword === value) {
+        delete nextErrors.confirmPassword;
+      }
+    }
+
+    if (fieldName === "confirmPassword") {
+      if (isFieldTouched && value !== password) {
+        nextErrors.confirmPassword = "Passwords do not match.";
+      } else {
+        delete nextErrors.confirmPassword;
+      }
+    }
+
+    setErrors(nextErrors);
+  };
+
+  const handleBlur = (fieldName) => {
+    setTouched((prev) => ({ ...prev, [fieldName]: true }));
+
+    if (fieldName === "name") validateField("name", name, true);
+    if (fieldName === "email") validateField("email", email, true);
+    if (fieldName === "password") validateField("password", password, true);
+    if (fieldName === "confirmPassword") {
+      validateField("confirmPassword", confirmPassword, true);
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Custom JWT Auth logic will go here
-    console.log("Signup with:", name, email, password);
-    navigate("/dashboard");
+
+    const allTouched = {
+      name: true,
+      email: true,
+      password: true,
+      confirmPassword: true,
+    };
+    setTouched(allTouched);
+
+    const localErrors = {};
+
+    if (name.trim() === "") localErrors.name = "Please enter your name.";
+    if (!emailRegex.test(email)) {
+      localErrors.email = "Please enter a valid email address.";
+    }
+    if (
+      password.length < 8 ||
+      !/[A-Z]/.test(password) ||
+      !/[0-9]/.test(password) ||
+      !/[@$!%*?&]/.test(password)
+    ) {
+      localErrors.password =
+        "Password must be 8+ characters with an uppercase letter, a number, and a special character.";
+    }
+    if (confirmPassword !== password) {
+      localErrors.confirmPassword = "Passwords do not match.";
+    }
+
+    setErrors(localErrors);
+
+    if (Object.keys(localErrors).length === 0) {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/auth/register",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({ fullName: name, email, password }),
+          },
+        );
+
+        const data = await response.json();
+
+        if (data.success) {
+          // 🔐 Store token and all relevant user properties dynamically
+          localStorage.setItem("userName", data.fullName);
+          localStorage.setItem("userEmail", data.email);
+
+          navigate("/dashboard");
+        } else {
+          setErrors({ form: data.message || "Registration failed." });
+        }
+      } catch (err) {
+        console.error("Signup network error:", err);
+        setErrors({
+          form: "Cannot connect to authentication server. Is it running?",
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   return (
-    <div className="bg-slate-700 flex items-center justify-center min-h-screen p-4 font-sans selection:bg-blue-200">
-      <div className="w-full max-w-md bg-white rounded-2xl p-8 shadow-sm border border-gray-100 space-y-6">
-        <div className="text-center space-y-3 flex flex-col items-center">
-          <div className="w-16 h-16 bg-blue-100/70 rounded-2xl flex items-center justify-center text-[#1e40af] mb-1 shadow-sm">
-            <UserPlus className="w-7 h-7" />
-          </div>
-          <div className="space-y-1">
-            <h2 className="text-2xl font-bold text-[#0f172a]">Create Account</h2>
-            <p className="text-sm text-[#64748b]">Create an account to get started.</p>
-          </div>
-        </div>
-
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-[#475569]">
-              Full Name
-            </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
-                <User className="w-5 h-5" />
-              </span>
-              <input
-                type="text"
-                placeholder="Full Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full bg-[#f8fafc] border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-blue-400"
-              />
+    <div className="bg-slate-700 flex min-h-screen items-center justify-center p-4 font-sans selection:bg-blue-200">
+      <div
+        className="relative flex w-full max-w-5xl flex-col items-center justify-center overflow-hidden rounded-3xl border border-gray-200 bg-[#f4f7fa] px-6 shadow-2xl"
+        style={{ minHeight: "800px" }}
+      >
+        <div className="w-full max-w-md space-y-6 rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+          <div className="flex flex-col items-center space-y-3 text-center">
+            <div className="mb-1 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-100/70 text-[#1e40af] shadow-sm">
+              <UserPlus className="h-7 w-7" />
+            </div>
+            <div className="space-y-1">
+              <h2 className="text-2xl font-bold text-[#0f172a]">
+                Create Account
+              </h2>
+              <p className="text-sm text-[#64748b]">
+                Create an account to get started.
+              </p>
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-[#475569]">
-              Email Address
-            </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
-                <Mail className="w-5 h-5" />
-              </span>
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-[#f8fafc] border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-blue-400"
-              />
+          {errors.form && (
+            <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>{errors.form}</span>
             </div>
-          </div>
+          )}
 
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-[#475569]">
-              Password
-            </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
-                <Lock className="w-5 h-5" />
-              </span>
-              <input
-                type={passwordVisible ? "text" : "password"}
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-[#f8fafc] border border-gray-200 rounded-xl pl-11 pr-12 py-3 text-sm focus:outline-none focus:border-blue-400"
-              />
-              <button
-                type="button"
-                onClick={() => setPasswordVisible(!passwordVisible)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400"
+          <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+            <div className="space-y-1.5">
+              <label
+                htmlFor="name"
+                className="text-xs font-bold uppercase tracking-wider text-[#475569]"
               >
-                {passwordVisible ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
+                Full Name
+              </label>
+              <div className="relative">
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                  <User className="h-5 w-5" />
+                </span>
+                <input
+                  type="text"
+                  id="name"
+                  placeholder="Full Name"
+                  value={name}
+                  disabled={loading}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    validateField("name", e.target.value);
+                  }}
+                  onBlur={() => handleBlur("name")}
+                  className={`w-full rounded-xl border bg-[#f8fafc] py-3 pl-11 pr-4 text-sm text-slate-800 placeholder-gray-400 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 ${
+                    errors.name
+                      ? "border-red-500 ring-2 ring-red-100"
+                      : "border-gray-200"
+                  }`}
+                />
+              </div>
+              {errors.name && (
+                <p className="mt-1 flex items-center gap-1 text-xs font-medium text-red-500">
+                  <AlertCircle className="h-3.5 w-3.5" /> {errors.name}
+                </p>
+              )}
             </div>
-          </div>
 
-          <button
-            type="submit"
-            className="w-full bg-[#1e40af] hover:bg-[#1d4ed8] text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 transition-colors mt-4"
-          >
-            <span>Create Account</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </form>
+            <div className="space-y-1.5">
+              <label
+                htmlFor="email"
+                className="text-xs font-bold uppercase tracking-wider text-[#475569]"
+              >
+                Email Address
+              </label>
+              <div className="relative">
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                  <Mail className="h-5 w-5" />
+                </span>
+                <input
+                  type="email"
+                  id="email"
+                  placeholder="Email"
+                  value={email}
+                  disabled={loading}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    validateField("email", e.target.value);
+                  }}
+                  onBlur={() => handleBlur("email")}
+                  className={`w-full rounded-xl border bg-[#f8fafc] py-3 pl-11 pr-4 text-sm text-slate-800 placeholder-gray-400 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 ${
+                    errors.email
+                      ? "border-red-500 ring-2 ring-red-100"
+                      : "border-gray-200"
+                  }`}
+                />
+              </div>
+              {errors.email && (
+                <p className="mt-1 flex items-center gap-1 text-xs font-medium text-red-500">
+                  <AlertCircle className="h-3.5 w-3.5" /> {errors.email}
+                </p>
+              )}
+            </div>
 
-        <p className="text-center text-sm text-[#64748b] pt-2">
-          Already have an account?{" "}
-          <button
-            type="button"
-            onClick={() => navigate("/signin")}
-            className="font-bold text-[#1e40af] hover:underline focus:outline-none"
-          >
-            Sign in
-          </button>
-        </p>
+            <div className="space-y-1.5">
+              <label
+                htmlFor="password"
+                className="text-xs font-bold uppercase tracking-wider text-[#475569]"
+              >
+                Password
+              </label>
+              <div className="relative">
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                  <Lock className="h-5 w-5" />
+                </span>
+                <input
+                  type={passwordVisible ? "text" : "password"}
+                  id="password"
+                  placeholder="Password"
+                  value={password}
+                  disabled={loading}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    validateField("password", e.target.value);
+                  }}
+                  onBlur={() => handleBlur("password")}
+                  className={`w-full rounded-xl border bg-[#f8fafc] py-3 pl-11 pr-12 text-sm text-slate-800 placeholder-gray-400 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 ${
+                    errors.password
+                      ? "border-red-500 ring-2 ring-red-100"
+                      : "border-gray-200"
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setPasswordVisible(!passwordVisible)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 transition-colors hover:text-slate-600 focus:outline-none"
+                >
+                  {passwordVisible ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="mt-1 flex items-center gap-1 text-xs font-medium text-red-500">
+                  <AlertCircle className="h-3.5 w-3.5" /> {errors.password}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <label
+                htmlFor="confirmPassword"
+                className="text-xs font-bold uppercase tracking-wider text-[#475569]"
+              >
+                Confirm Password
+              </label>
+              <div className="relative">
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                  <Lock className="h-5 w-5" />
+                </span>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  disabled={loading}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    validateField("confirmPassword", e.target.value);
+                  }}
+                  onBlur={() => handleBlur("confirmPassword")}
+                  className={`w-full rounded-xl border bg-[#f8fafc] py-3 pl-11 pr-4 text-sm text-slate-800 placeholder-gray-400 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 ${
+                    errors.confirmPassword
+                      ? "border-red-500 ring-2 ring-red-100"
+                      : "border-gray-200"
+                  }`}
+                />
+              </div>
+              {errors.confirmPassword && (
+                <p className="mt-1 flex items-center gap-1 text-xs font-medium text-red-500">
+                  <AlertCircle className="h-3.5 w-3.5" />{" "}
+                  {errors.confirmPassword}
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-4 flex w-full items-center justify-center space-x-2 rounded-xl bg-[#1e40af] px-4 py-3 font-semibold text-white shadow-md shadow-blue-200 transition-colors hover:bg-[#1d4ed8] disabled:opacity-50"
+            >
+              <span>{loading ? "Processing..." : "Create Account"}</span>
+              {!loading && (
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              )}
+            </button>
+          </form>
+
+          <p className="pt-2 text-center text-sm text-[#64748b]">
+            Already have an account?{" "}
+            <button
+              type="button"
+              onClick={() => navigate("/signin")}
+              className="font-bold text-[#1e40af] hover:underline focus:outline-none"
+            >
+              Sign in
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );
