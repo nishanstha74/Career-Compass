@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useAuth } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import appLogo from "../../assets/Career Compass Logo.png";
 import FeedbackModal from "../modals/FeedbackModal";
@@ -111,32 +110,18 @@ function StepCard({ step, index }) {
 }
 
 export default function Home() {
-  const { isLoaded, isSignedIn } = useAuth();
   const navigate = useNavigate();
   const [feedbackOpen, setFeedbackOpen] = useState(false);
 
-  // Automatically push the user to the dashboard if a valid login session exists
-  useEffect(() => {
-    if (isLoaded && isSignedIn) {
-      navigate("/dashboard", { replace: true });
-    }
-  }, [isLoaded, isSignedIn, navigate]);
-
-  // Handler for manual button clicks (safety fallback)
+  // Handler for manual button clicks
   const handleGetStarted = () => {
-    if (isSignedIn) {
-      navigate("/dashboard");
-    } else {
-      navigate("/signup");
-    }
+    // Navigate to signup or dashboard based on future JWT auth logic
+    navigate("/signup");
   };
 
   const handleSignInClick = () => {
-    if (isSignedIn) {
-      navigate("/dashboard");
-    } else {
-      navigate("/signin");
-    }
+    // Navigate to signin based on future JWT auth logic
+    navigate("/signin");
   };
 
   // Smooth-scroll to a section when a nav link is clicked
@@ -147,11 +132,6 @@ export default function Home() {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
-
-  // Prevent landing page content from flashing briefly while checking authentication status
-  if (!isLoaded || isSignedIn) {
-    return null;
-  }
 
   const systemModules = [
     {

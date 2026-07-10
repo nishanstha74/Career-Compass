@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useUser, useClerk } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import appLogo from "../../assets/Career Compass Logo.png";
 import ResumeUploadModal from "../modals/ResumeUploadModal";
@@ -26,33 +25,19 @@ import {
 } from "lucide-react";
 
 export default function Dashboard() {
-  const { isLoaded, isSignedIn, user } = useUser();
-  const { signOut } = useClerk();
   const navigate = useNavigate();
+
+  // Mock user for now since we removed Clerk
+  const user = {
+    firstName: "Demo",
+    fullName: "Demo User",
+    imageUrl: null,
+    primaryEmailAddress: { emailAddress: "demo@example.com" }
+  };
 
   // Functional Application States
   const [targetRole, setTargetRole] = useState("Frontend Engineer");
   const [isUploadOpen, setIsUploadOpen] = useState(false);
-
-  if (!isLoaded) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center bg-[#f4f7fb]">
-        <div className="text-sm font-semibold text-slate-500 animate-pulse">
-          Loading secure profile...
-        </div>
-      </div>
-    );
-  }
-
-  if (!isSignedIn) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center bg-[#f4f7fb]">
-        <div className="text-sm font-semibold text-red-500">
-          Unauthorized Access. Please log in.
-        </div>
-      </div>
-    );
-  }
 
   const currentDate = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -60,8 +45,8 @@ export default function Dashboard() {
     day: "numeric",
   });
 
-  const handleSignOut = async () => {
-    await signOut();
+  const handleSignOut = () => {
+    // Add custom JWT sign out logic here later
     navigate("/");
   };
 

@@ -1,26 +1,10 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useUser, AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
 import SignIn from "./components/auth/SignIn";
 import SignUp from "./components/auth/SignUp";
 import Dashboard from "./components/pages/Dashboard";
 import Home from "./components/pages/Home";
 import FeedbackModal from "./components/modals/FeedbackModal";
-// Protected Route: Instantly checks if user is signed in, no full-screen loading block
-function ProtectedRoute({ children }) {
-  const { isLoaded, isSignedIn } = useUser();
-
-  if (!isLoaded) return null; // Returns nothing until Clerk resolves, preventing flashes
-  return isSignedIn ? children : <Navigate to="/signin" replace />;
-}
-
-// Public Route: Instantly checks status to eliminate the loading delay
-function PublicRoute({ children }) {
-  const { isLoaded, isSignedIn } = useUser();
-
-  if (!isLoaded) return null; // Returns nothing until Clerk resolves, preventing flashes
-  return !isSignedIn ? children : <Navigate to="/dashboard" replace />;
-}
 
 export default function App() {
   return (
@@ -29,39 +13,12 @@ export default function App() {
         {/* 1. DEFAULT ROOT ROUTE: Automatically opens the Home landing page when you run the program */}
         <Route path="/" element={<Home />} />
 
-        {/* Public Authentication Routes */}
-        <Route
-          path="/signin"
-          element={
-            <PublicRoute>
-              <SignIn />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <PublicRoute>
-              <SignUp />
-            </PublicRoute>
-          }
-        />
+        {/* Authentication Routes (To be updated with JWT logic) */}
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
 
-        {/* Handles the Google OAuth handshake processing safely */}
-        <Route
-          path="/sso-callback"
-          element={<AuthenticateWithRedirectCallback />}
-        />
-
-        {/* Protected Dashboard Route */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
+        {/* Dashboard Route (Currently unprotected until JWT is added) */}
+        <Route path="/dashboard" element={<Dashboard />} />
 
         {/* 2. CATCH-ALL FALLBACK: Redirects broken or unrecognized URLs back to the Home page safely */}
         <Route path="*" element={<Navigate to="/" replace />} />
