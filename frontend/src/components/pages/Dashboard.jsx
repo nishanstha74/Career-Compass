@@ -32,7 +32,7 @@ export default function Dashboard() {
     firstName: "Demo",
     fullName: "Demo User",
     imageUrl: null,
-    primaryEmailAddress: { emailAddress: "demo@example.com" }
+    primaryEmailAddress: { emailAddress: "demo@example.com" },
   };
 
   // Functional Application States
@@ -161,7 +161,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-y-auto p-8 space-y-6">
           {/* Top Prediction Banner */}
           <div className="bg-[#4f46e5] rounded-2xl p-6 text-white relative overflow-hidden shadow-sm">
-            <div className="absolute right-0 top-0 w-64 h-full bg-gradient-to-l from-white/10 to-transparent pointer-events-none"></div>
+            <div className="absolute right-0 top-0 w-64 h-full bg-linear-to-l from-white/10 to-transparent pointer-events-none"></div>
 
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 relative z-10">
               <div className="space-y-1.5">
@@ -177,11 +177,11 @@ export default function Dashboard() {
                 </p>
               </div>
 
-              <div className="bg-white/10 border border-white/20 px-4 py-2 rounded-xl text-left md:text-right backdrop-blur-sm min-w-[160px]">
+              <div className="bg-white/10 border border-white/20 px-4 py-2 rounded-xl text-left md:text-right backdrop-blur-sm min-w-40">
                 <div className="text-[9px] uppercase tracking-wider text-indigo-200 font-bold mb-0.5">
                   Current Target
                 </div>
-                <div className="text-sm font-bold truncate max-w-[180px]">
+                <div className="text-sm font-bold truncate max-w-45">
                   {targetRole.trim() ? targetRole : "None Specified"}
                 </div>
               </div>
@@ -501,7 +501,7 @@ export default function Dashboard() {
 
                 <div className="relative border-l-2 border-slate-100 ml-3 space-y-6">
                   <div className="relative pl-6">
-                    <div className="absolute -left-[9px] top-0.5 w-4 h-4 rounded-full bg-emerald-50 border-2 border-emerald-500 flex items-center justify-center">
+                    <div className="absolute -left-2.25 top-0.5 w-4 h-4 rounded-full bg-emerald-50 border-2 border-emerald-500 flex items-center justify-center">
                       <CheckCircle2 className="w-2.5 h-2.5 text-emerald-500" />
                     </div>
                     <div className="text-[10px] uppercase font-bold text-slate-400 mb-0.5">
@@ -513,7 +513,7 @@ export default function Dashboard() {
                   </div>
 
                   <div className="relative pl-6">
-                    <div className="absolute -left-[9px] top-0.5 w-4 h-4 rounded-full bg-indigo-50 border-2 border-indigo-500 flex items-center justify-center">
+                    <div className="absolute -left-2.25 top-0.5 w-4 h-4 rounded-full bg-indigo-50 border-2 border-indigo-500 flex items-center justify-center">
                       <BookOpen className="w-2.5 h-2.5 text-indigo-500" />
                     </div>
                     <div className="text-[10px] uppercase font-bold text-slate-400 mb-0.5">
@@ -535,7 +535,7 @@ export default function Dashboard() {
                   </div>
 
                   <div className="relative pl-6">
-                    <div className="absolute -left-[9px] top-0.5 w-4 h-4 rounded-full bg-slate-50 border-2 border-slate-200 flex items-center justify-center">
+                    <div className="absolute -left-2.25 top-0.5 w-4 h-4 rounded-full bg-slate-50 border-2 border-slate-200 flex items-center justify-center">
                       <Lock className="w-2 h-2 text-slate-400" />
                     </div>
                     <div className="text-[10px] uppercase font-bold text-slate-400 mb-0.5">

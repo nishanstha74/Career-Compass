@@ -219,7 +219,7 @@ export default function Home() {
             className="relative py-2 group transition-colors duration-300 hover:text-indigo-600"
           >
             Features
-            <span className="absolute left-0 -bottom-0.5 h-[2px] w-0 bg-indigo-600 transition-all duration-300 group-hover:w-full" />
+            <span className="absolute left-0 -bottom-0.5 h-0.5 w-0 bg-indigo-600 transition-all duration-300 group-hover:w-full" />
           </a>
           <a
             href="#how-it-works"
@@ -227,7 +227,7 @@ export default function Home() {
             className="relative py-2 group transition-colors duration-300 hover:text-indigo-600"
           >
             How It Works
-            <span className="absolute left-0 -bottom-0.5 h-[2px] w-0 bg-indigo-600 transition-all duration-300 group-hover:w-full" />
+            <span className="absolute left-0 -bottom-0.5 h-0.5 w-0 bg-indigo-600 transition-all duration-300 group-hover:w-full" />
           </a>
         </div>
 
@@ -253,12 +253,12 @@ export default function Home() {
       <main className="flex-1 pt-16">
         {/* HERO INTRO CONTENT SECTION */}
         <section className="relative px-6 py-16 md:py-24 max-w-7xl mx-auto text-center overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-indigo-500/5 blur-[120px] -z-10 rounded-full" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-200 h-87.5 bg-indigo-500/5 blur-[120px] -z-10 rounded-full" />
 
           <div className="max-w-3xl mx-auto space-y-6">
             <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 max-w-4xl mx-auto leading-tight md:leading-none">
               Empower Your Tech Career Path with{" "}
-              <span className="bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
                 Adaptive Intelligence
               </span>
             </h1>
