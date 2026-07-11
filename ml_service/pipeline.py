@@ -3,6 +3,7 @@
 import ast
 import os
 import re
+import sys
 
 import joblib
 import numpy as np
@@ -207,7 +208,11 @@ if __name__ == "__main__":
     train_job_matcher(jobs)
 
     # ── Step 2: Process a resume and get the top 5 ML-predicted matches ──
-    resume_path = "mock/CV1.pdf"
+    # Kept in sync with pdf_extract.py's own default file_path, so both
+    # scripts always operate on the same uploaded resume. Override via
+    # command line if you need to test a different file:
+    #   python pipeline.py mock/CV2.pdf
+    resume_path = sys.argv[1] if len(sys.argv) > 1 else "mock/CV1.pdf"
     matches = get_job_matches(resume_path, jobs=jobs, top_n=5)
 
     print("\nTop job matches:")

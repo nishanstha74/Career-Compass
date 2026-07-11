@@ -387,15 +387,17 @@ def quality_check(text):
     }
 
 
-def _is_weak(text, report, min_length=50):
+def _is_weak(text, report, min_length=300):
     """Decide whether an extraction is weak enough to escalate to the next method."""
     if len(text.strip()) < min_length:
         return True
-    # long-but-garbled: no email/phone AND no recognizable section headers
-    if not report["has_email"] and not report["has_phone"] and not report["has_sections"]:
+    # A real resume extraction should have email, phone, AND section headers.
+    # Missing any one of these is a strong signal of a partial/garbled
+    # extraction (e.g. YOLO cropping out the contact-info region, or OCR
+    # mangling a header) — so escalate to the next method if any is missing.
+    if not report["has_email"] or not report["has_phone"] or not report["has_sections"]:
         return True
     return False
-
 
 # ─── Master Function ────────────────────────────────────────────────────────────
 
@@ -472,7 +474,7 @@ def extract_resume_text(file_path, lang='eng'):
 
 
 if __name__ == "__main__":
-    file_path = "mock/CV1.pdf"  # or "resume.docx" / "resume.pdf"
+    file_path = "mock/resume30.jpeg"  # or "resume.docx" / "resume.pdf"
 
     text, method, report = extract_resume_text(file_path)
 

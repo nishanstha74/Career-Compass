@@ -1,13 +1,104 @@
-Rajan Raj Acharya
+ARYAN SEHRAWAT
 
-7 9829113768 | SGBrajanraj@ieceorg | © GitHub | LinkedIn | Q Lalitpur, Nepal
+Hadoop Developer
+Phone: 9878564481
 
-Summary
-I ES IE EEE IIE! IBIS IIIS! EI av
+SKILLS ( TECHNOLOGY /
+FUNCTIONAL )
 
-Junior Backend Engineer with professional experience developing backend services using Go. Experienced
-in REST APIs, gRPC, PostgreSQL, Docker, and scalable backend architecture. Worked as a Backend
-Intern and Part-Time Backend Engineer at Astergaze Technologies. Strong academic background with
-a GPA of 4.0 maintained across five consecutive semesters.
+Technical Solution Design ecco
+Data Warehousing eco
+Debugging coco
+Data Integration ecce
+Team Coordination eco
 
-Technical Skille
+Daily Reporting ecco
+
+POSITIONS OF RESPONSIBILITY
+
+Member of college's IT club TECHNICIA from
+
+2015 to 2017.
+
+VOLUNTEERING
+
+Volunteered for awareness programme on
+World Health Day in 2018.
+
+Member of Sparsh NGO in 2018.
+Volunteered for clean India campaign in
+2015 and 2016.
+
+LANGUAGES
+
+English
+Hindi
+
+PARTICIPATIONS / SPORTS
+
+First prize winner in CompuTech competiti
+organised by IIT, Delhi in 2019.
+
+Second prize winner in Big Data Research
+Awards in 2019.
+
+Participated in Codeathon organised by UC
+Berkeley in 2018.
+
+INDUSTRIAL VISITS
+
+Visited Google's California office in 2018
+CISCO, Bangalore in 2018
+
+Email: aryan_sehravat345@gmail.com
+Linkedin profile: Linkedin.com/in/sehrawat-aryan
+Address: House No. 80, Rewari Road, Gurgaon
+
+SHORT SUMMARY / INTRODUCTION
+
+A passionate and determined individual with strong emphasis on design,
+development, implementation, testing and deployment of software applications
+on Hadoop.
+
+EDUCATION
+
+M.Tech (Data Science) » Jaypee Institute of Information Technology, Noida 2019
+
+B.Sc Computer Science (Hons.) + Hansraj College, Delhi 2017
+Higher Secondary » St Xavier's School, Gurgaon 2014
+Senior Secondary + St Xaviers School, Gurgaon 2012
+
+PROFESSIONAL ENHANCEMENTS
+
+Technical Skills
+
+Big Data Ecosystems: Hadoop, MapReduce, HDFS, Yarn, Pig,
+Hive, Flume, AWS
+
+Programming languages: Java, C++, XML, HTML.
+
+Scripting Languages: PHP, Javascript, Python
+
+Operating Systems: Windows, Linux, UNIX, Ubuntu
+
+Tools: Eclipse, NetBeans, JBuilder
+
+Methodology: Agile, Design Patterns
+
+EXPERIENCE / INTERNSHIP
+
+Intern Hadoop Developer » HCL, Gurgaon May 2018 - Aug 2018
+
+Stored data by writing Mapreduce and Pig jobs based on business.
+requirements.
+
+Analysed and drew insights from datasets and participated in multiple big data
+POC to evaluate different architectures, tools and vendor products.
+Documented day to day tasks,and assisted with loading data to hive tables.
+
+PROJECTS
+
+Cloud Computing Platform for Big Data Adoption and Analytics
+
+= Designed a scalable database management system for updating intensive
+application workloads and descriptive and deep analytics.
