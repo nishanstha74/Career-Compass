@@ -1,55 +1,13 @@
-SHRUTI PATHAK
+Rajan Raj Acharya
 
-Data Annotator
+7 9829113768 | SGBrajanraj@ieceorg | © GitHub | LinkedIn | Q Lalitpur, Nepal
 
-Education
-LVYVUN OLS
+Summary
+I ES IE EEE IIE! IBIS IIIS! EI av
 
-2022 Data Annotation for AI at DY Patil Institute of Technology
+Junior Backend Engineer with professional experience developing backend services using Go. Experienced
+in REST APIs, gRPC, PostgreSQL, Docker, and scalable backend architecture. Worked as a Backend
+Intern and Part-Time Backend Engineer at Astergaze Technologies. Strong academic background with
+a GPA of 4.0 maintained across five consecutive semesters.
 
-EXTRA CURRICULAR ACTIVITIES
-
-e Participated in ACM ICPC coding competition, and secured 3rd Position.
-e Appointed as a Team Leader of AI Club-SRM University.
-e Secured 2nd Position in Hackathon 2021.
-
-Experience
-PLOYMENT HISTORY
-
-Data Annotator | Expertia AI| Chennai
-Jun 2023 - Present
-
-e Accurately annotating and labelling data according to predefined guidelines and specifications,
-ensuring high-quality and consistent annotations for machine learning and data analysis purposes.
-Conducting thorough quality checks and validations on annotated data to identify and rectify any
-errors or inconsistencies, maintaining data integrity and reliability.
-Analysing annotated data to identify patterns, trends, and insights, providing valuable input to
-improve annotation processes and enhance data quality.
-e Documenting annotation processes, guidelines, and best practices, ensuring clear and
-comprehensive documentation for reference and training purposes.
-Collaborating with cross-functional teams, including data scientists, machine learning engineers,
-and project managers, to understand project requirements and provide support as needed.
-Providing feedback and suggestions for process improvements and optimisations to streamline
-annotation workflows and increase efficiency.
-
-ERNSHIPS
-
-Intern Data Annotator | Stark Technologies | Chennai
-Aug 2022 - Mar 2023
-e Assisted researchers to determine and understand input data and annotated by drawing boxes to
-highlight areas of interest in images.
-e Supported researchers in training deep learning models through accurately categorising content,
-labeling images, and annotating data.
-e Reported and documented issues faced from data annotation to research team and discuss
-solutions to improve data.
-
-UCATION
-2 B.Tech in Computer Science -> SRM University, Chennai
-Projects Undertook-
-
-e A Personal Assistant: Created a simple stand-alone application that helps less tech savvy people in
-the world to use the computer without feeling ignorant or computer illiterate.
-
-¢ The application works same like Siri/ Google Assistant etc. But the application deals with the
-computer itself mainly. The U.I of the application is self- explanatory and minimal. Currently it
-takes text as input as most of the people are not very good at speaking.
+Technical Skille

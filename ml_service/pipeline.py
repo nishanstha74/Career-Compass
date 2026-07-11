@@ -207,7 +207,7 @@ if __name__ == "__main__":
     train_job_matcher(jobs)
 
     # ── Step 2: Process a resume and get the top 5 ML-predicted matches ──
-    resume_path = "mock/resume02.jpeg"
+    resume_path = "mock/CV1.pdf"
     matches = get_job_matches(resume_path, jobs=jobs, top_n=5)
 
     print("\nTop job matches:")

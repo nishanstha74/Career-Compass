@@ -24,7 +24,7 @@ USE_YOLO = True
 
 # Path to your trained weights from train_yolo.py.
 # Adjust this if your folder layout differs.
-YOLO_MODEL_PATH = r"C:\Users\PREDATOR\OneDrive\Desktop\PROJECT\Career-Compass\runs\detect\runs\resume_sections-8\weights\best.pt"
+YOLO_MODEL_PATH = r"D:\PROJECT\Career-Compass\runs\detect\runs\resume_sections\weights\best.pt"
 # Maps YOLO class names -> the canonical header text categorize.py's
 # SECTION_HEADERS already recognizes. Keeping these in sync means the
 # reconstructed text below gets parsed with high confidence downstream.
@@ -472,7 +472,7 @@ def extract_resume_text(file_path, lang='eng'):
 
 
 if __name__ == "__main__":
-    file_path = "mock/resume02.jpeg"  # or "resume.docx" / "resume.pdf"
+    file_path = "mock/CV1.pdf"  # or "resume.docx" / "resume.pdf"
 
     text, method, report = extract_resume_text(file_path)
 
