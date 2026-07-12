@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import appLogo from "../../assets/Career Compass Logo.png";
-import ResumeUploadModal from "../modals/ResumeUploadModal";
 import {
   LayoutDashboard,
+  Sparkles,
+  ArrowLeft,
   UploadCloud,
   Target,
   Puzzle,
@@ -13,50 +13,74 @@ import {
   Search,
   Bell,
   Upload,
-  Sparkles,
+  X,
   ChevronRight,
+  TrendingUp,
   CheckCircle2,
   AlertCircle,
   PlusCircle,
   BookOpen,
   Lock,
-  TrendingUp,
-  X,
 } from "lucide-react";
 
 export default function Dashboard() {
   const navigate = useNavigate();
 
-  // Mock user for now since we removed Clerk
-  const user = {
-    firstName: "Demo",
-    fullName: "Demo User",
-    imageUrl: null,
-    primaryEmailAddress: { emailAddress: "demo@example.com" },
-  };
-
-  // Functional Application States
   const [targetRole, setTargetRole] = useState("Frontend Engineer");
   const [isUploadOpen, setIsUploadOpen] = useState(false);
 
+  // 📢 State to check if this is a fresh registration redirect
+  const [showRegistrationBanner, setShowRegistrationBanner] = useState(false);
+
+  // 🚀 EXTRACT AND LOAD SECURE PROPERTY SESSIONS LIVE
+  const storedName = localStorage.getItem("userName") || "User";
+  const storedEmail = localStorage.getItem("userEmail") || "No Email Provided";
+
+  // Check flag on mount to determine if we show the success alert
+  useEffect(() => {
+    const registrationFlag = localStorage.getItem("isNewRegistration");
+    if (registrationFlag === "true") {
+      setShowRegistrationBanner(true);
+      // Clean it from memory immediately so it won't persist on page reloads
+      localStorage.removeItem("isNewRegistration");
+    }
+  }, []);
+
+  // Extract user's first name gracefully from full string space layout split
+  const firstName = storedName.split(" ")[0];
+
+  const user = {
+    firstName: firstName,
+    fullName: storedName,
+    imageUrl: null,
+    primaryEmailAddress: { emailAddress: storedEmail },
+  };
+
+  const appLogo =
+    "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=80&auto=format&fit=crop&q=60";
   const currentDate = new Date().toLocaleDateString("en-US", {
     weekday: "long",
+    year: "numeric",
     month: "long",
     day: "numeric",
   });
 
   const handleSignOut = () => {
-    // Add custom JWT sign out logic here later
-    navigate("/");
+    console.log("Signing out safely...");
+    // 🔐 Scrub tokens clean on sign-out transition
+    localStorage.removeItem("token");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("isNewRegistration");
+    navigate("/signin");
   };
 
   const handleAnalyzeRole = () => {
-    if (!targetRole.trim()) return;
-    alert(`Analyzing resume match for: ${targetRole}`);
+    console.log(`Analyzing matches for: ${targetRole}`);
   };
 
   return (
-    <div className="flex h-screen bg-[#f4f7fb] font-sans text-slate-800 selection:bg-indigo-100">
+    <div className="flex h-screen w-screen bg-slate-100 overflow-hidden text-slate-800">
       {/* ==================== SIDEBAR ==================== */}
       <aside className="w-64 bg-[#1e1a4f] flex flex-col h-full shrink-0">
         <div className="h-20 px-6 flex flex-col justify-center border-b border-white/5">
@@ -64,7 +88,7 @@ export default function Dashboard() {
             <img
               src={appLogo}
               alt="CareerCompass"
-              className="w-7 h-7 object-contain"
+              className="w-7 h-7 rounded-md object-cover"
             />
             <span className="text-xl font-bold text-white tracking-tight">
               CareerCompass
@@ -142,6 +166,12 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex items-center gap-5">
+            <button
+              onClick={() => navigate("/")}
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-indigo-300 hover:text-indigo-600"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" /> Home
+            </button>
             <button className="text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
               <Search className="w-5 h-5" />
             </button>
@@ -159,6 +189,25 @@ export default function Dashboard() {
         </header>
 
         <div className="flex-1 overflow-y-auto p-8 space-y-6">
+          {/* 📢 DYNAMIC REGISTRATION SUCCESS PRINT BANNER */}
+          {showRegistrationBanner && (
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between shadow-xs transition-all animate-fade-in">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                <div className="text-sm text-emerald-800 font-medium">
+                  New user registered successfully:{" "}
+                  <span className="font-bold">{storedEmail}</span>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowRegistrationBanner(false)}
+                className="text-emerald-400 hover:text-emerald-600 transition-colors rounded-full p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
           {/* Top Prediction Banner */}
           <div className="bg-[#4f46e5] rounded-2xl p-6 text-white relative overflow-hidden shadow-sm">
             <div className="absolute right-0 top-0 w-64 h-full bg-linear-to-l from-white/10 to-transparent pointer-events-none"></div>
@@ -331,7 +380,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Two Column Layout Layout */}
+          {/* Two Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* LEFT COLUMN */}
             <div className="lg:col-span-2 space-y-6">
@@ -501,7 +550,7 @@ export default function Dashboard() {
 
                 <div className="relative border-l-2 border-slate-100 ml-3 space-y-6">
                   <div className="relative pl-6">
-                    <div className="absolute -left-2.25 top-0.5 w-4 h-4 rounded-full bg-emerald-50 border-2 border-emerald-500 flex items-center justify-center">
+                    <div className="absolute -left-2.5 top-0.5 w-4 h-4 rounded-full bg-emerald-50 border-2 border-emerald-500 flex items-center justify-center">
                       <CheckCircle2 className="w-2.5 h-2.5 text-emerald-500" />
                     </div>
                     <div className="text-[10px] uppercase font-bold text-slate-400 mb-0.5">
@@ -513,7 +562,7 @@ export default function Dashboard() {
                   </div>
 
                   <div className="relative pl-6">
-                    <div className="absolute -left-2.25 top-0.5 w-4 h-4 rounded-full bg-indigo-50 border-2 border-indigo-500 flex items-center justify-center">
+                    <div className="absolute -left-2.5 top-0.5 w-4 h-4 rounded-full bg-indigo-50 border-2 border-indigo-500 flex items-center justify-center">
                       <BookOpen className="w-2.5 h-2.5 text-indigo-500" />
                     </div>
                     <div className="text-[10px] uppercase font-bold text-slate-400 mb-0.5">
@@ -535,7 +584,7 @@ export default function Dashboard() {
                   </div>
 
                   <div className="relative pl-6">
-                    <div className="absolute -left-2.25 top-0.5 w-4 h-4 rounded-full bg-slate-50 border-2 border-slate-200 flex items-center justify-center">
+                    <div className="absolute -left-2.5 top-0.5 w-4 h-4 rounded-full bg-slate-50 border-2 border-slate-200 flex items-center justify-center">
                       <Lock className="w-2 h-2 text-slate-400" />
                     </div>
                     <div className="text-[10px] uppercase font-bold text-slate-400 mb-0.5">
@@ -592,12 +641,6 @@ export default function Dashboard() {
           </div>
         </div>
       </main>
-
-      {/* Modal Overlay Layer Injection */}
-      <ResumeUploadModal
-        isOpen={isUploadOpen}
-        onClose={() => setIsUploadOpen(false)}
-      />
     </div>
   );
 }
