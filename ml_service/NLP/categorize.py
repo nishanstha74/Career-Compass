@@ -296,6 +296,81 @@ def merge_results(spacy_result, gemini_result):
     return merged
 
 
+# ─── STAGE 5: DERIVE ML-READY FIELDS ──────────────────────────────────────────
+
+def _add_ml_features(result: dict) -> dict:
+    """
+    pipeline.py's _score_jobs_with_model() expects a flat 'full_text' string,
+    a flat 'skills' list, and boolean presence flags — but the spaCy/Gemini
+    paths above build a richer nested structure instead (skills as
+    {"raw": ...}, summary/certifications/languages as raw text blocks, etc).
+
+    This bridges the two without disturbing the existing nested fields other
+    code may already depend on — it only ADDS/normalizes the fields the ML
+    scoring stage reads, run once at the very end of categorize_resume()
+    regardless of which path (spacy-only or hybrid) produced the result.
+    """
+    # --- flat skills list, parsed out of whatever raw skills text we have ---
+    skills_raw = result.get("skills", "")
+    if isinstance(skills_raw, dict):
+        skills_raw = skills_raw.get("raw", "")
+    elif isinstance(skills_raw, list):
+        # Gemini path already returns a list — keep as-is, just clean it
+        result["skills"] = [s.strip() for s in skills_raw if s and str(s).strip()]
+        skills_raw = None  # already handled, skip the split-string branch below
+
+    if skills_raw is not None:
+        # Split on common delimiters: commas, bullets, newlines, pipes, slashes
+        parts = re.split(r'[,\n•●▪\|/]+', skills_raw)
+        result["skills"] = [p.strip() for p in parts if p.strip()]
+
+    # --- full_text: everything concatenated, for TF-IDF similarity ---
+    text_fields = []
+    for key in ("summary", "experience", "education", "projects",
+                "certifications", "languages", "leadership",
+                "achievements", "activities"):
+        val = result.get(key, "")
+        if isinstance(val, dict):
+            val = val.get("raw", "")
+        elif isinstance(val, list):
+            val = " ".join(
+                v if isinstance(v, str) else json.dumps(v) for v in val
+            )
+        if val:
+            text_fields.append(str(val))
+    text_fields.append(" ".join(result.get("skills", [])))
+    result["full_text"] = " ".join(text_fields).strip()
+
+    # --- n_positions_held: count distinct experience entries ---
+    exp = result.get("experience", "")
+    if isinstance(exp, dict):
+        # spaCy path: rough proxy — count distinct company names found
+        result["n_positions_held"] = len(set(exp.get("companies", [])))
+    elif isinstance(exp, list):
+        # Gemini path: one dict per job entry
+        result["n_positions_held"] = len(exp)
+    else:
+        result["n_positions_held"] = 0
+
+    # --- boolean presence flags ---
+    summary_val = result.get("summary", "")
+    result["has_career_objective"] = bool(str(summary_val).strip())
+
+    cert_val = result.get("certifications", "")
+    if isinstance(cert_val, str):
+        result["has_certification"] = bool(cert_val.strip())
+    else:
+        result["has_certification"] = bool(cert_val)
+
+    lang_val = result.get("languages", "")
+    if isinstance(lang_val, str):
+        result["has_languages"] = bool(lang_val.strip())
+    else:
+        result["has_languages"] = bool(lang_val)
+
+    return result
+
+
 # ─── MASTER CATEGORIZATION FUNCTION ───────────────────────────────────────────
 
 def categorize_resume(extracted_text, confidence_threshold=0.5):
@@ -318,6 +393,8 @@ def categorize_resume(extracted_text, confidence_threshold=0.5):
         gemini_result = categorize_with_gemini(extracted_text)
         result = merge_results(spacy_result, gemini_result)
         result["_meta"] = {"method": "hybrid", "confidence": confidence}
+
+    result = _add_ml_features(result)
 
     return result
 

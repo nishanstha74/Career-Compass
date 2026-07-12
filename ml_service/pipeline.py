@@ -38,6 +38,15 @@ JOB_VECTORIZER = _load_artifact("D:/PROJECT/Career-Compass/ml_service/ML_train/j
 FEATURE_NAMES = _load_artifact("D:/PROJECT/Career-Compass/ml_service/ML_train/feature_names.joblib")
 
 
+# ── SINGLE SOURCE OF TRUTH FOR WHICH RESUME TO PROCESS ──
+# Change this one line to switch resumes. pdf_extract.py's own __main__
+# block imports this exact constant (`from pipeline import RESUME_PATH`)
+# when run standalone, so both scripts always agree on which file is being
+# processed — no more editing two separate hardcoded paths in two files.
+# A CLI arg still overrides this if you pass one: `python pipeline.py foo.pdf`
+RESUME_PATH = "mock/resume23.jpeg"
+
+
 def process_resume(file_path: str) -> dict:
     """Extracts text from a resume file and returns structured JSON."""
     text, method, report = extract_resume_text(file_path)
@@ -208,11 +217,10 @@ if __name__ == "__main__":
     train_job_matcher(jobs)
 
     # ── Step 2: Process a resume and get the top 5 ML-predicted matches ──
-    # Kept in sync with pdf_extract.py's own default file_path, so both
-    # scripts always operate on the same uploaded resume. Override via
-    # command line if you need to test a different file:
-    #   python pipeline.py mock/CV2.pdf
-    resume_path = sys.argv[1] if len(sys.argv) > 1 else "mock/CV1.pdf"
+    # RESUME_PATH (defined near the top of this file) is the single source
+    # of truth for which resume gets processed. A CLI arg still overrides
+    # it if you pass one:  python pipeline.py mock/CV2.pdf
+    resume_path = sys.argv[1] if len(sys.argv) > 1 else RESUME_PATH
     matches = get_job_matches(resume_path, jobs=jobs, top_n=5)
 
     print("\nTop job matches:")

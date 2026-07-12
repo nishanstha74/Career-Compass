@@ -1,104 +1,58 @@
-ARYAN SEHRAWAT
-
-Hadoop Developer
-Phone: 9878564481
-
-SKILLS ( TECHNOLOGY /
-FUNCTIONAL )
-
-Technical Solution Design ecco
-Data Warehousing eco
-Debugging coco
-Data Integration ecce
-Team Coordination eco
-
-Daily Reporting ecco
-
-POSITIONS OF RESPONSIBILITY
-
-Member of college's IT club TECHNICIA from
-
-2015 to 2017.
-
-VOLUNTEERING
-
-Volunteered for awareness programme on
-World Health Day in 2018.
-
-Member of Sparsh NGO in 2018.
-Volunteered for clean India campaign in
-2015 and 2016.
-
-LANGUAGES
-
-English
-Hindi
-
-PARTICIPATIONS / SPORTS
-
-First prize winner in CompuTech competiti
-organised by IIT, Delhi in 2019.
-
-Second prize winner in Big Data Research
-Awards in 2019.
-
-Participated in Codeathon organised by UC
-Berkeley in 2018.
-
-INDUSTRIAL VISITS
-
-Visited Google's California office in 2018
-CISCO, Bangalore in 2018
-
-Email: aryan_sehravat345@gmail.com
-Linkedin profile: Linkedin.com/in/sehrawat-aryan
-Address: House No. 80, Rewari Road, Gurgaon
-
-SHORT SUMMARY / INTRODUCTION
-
-A passionate and determined individual with strong emphasis on design,
-development, implementation, testing and deployment of software applications
-on Hadoop.
-
-EDUCATION
-
-M.Tech (Data Science) » Jaypee Institute of Information Technology, Noida 2019
-
-B.Sc Computer Science (Hons.) + Hansraj College, Delhi 2017
-Higher Secondary » St Xavier's School, Gurgaon 2014
-Senior Secondary + St Xaviers School, Gurgaon 2012
-
-PROFESSIONAL ENHANCEMENTS
-
+Last Updated: 19 June 2026
+Rajan Raj Acharya
+(cid:131) +977 9829113768 | # rajan.raj@ieee.org | § GitHub | (cid:239) LinkedIn | + Lalitpur, Nepal
+Professional Summary
+JuniorBackendEngineerwithprofessionalexperiencedevelopingbackendservicesusingGo. Experienced
+in REST APIs, gRPC, PostgreSQL, Docker, and scalable backend architecture. Worked as a Backend
+Intern and Part-Time Backend Engineer at Astergaze Technologies. Strong academic background with
+a GPA of 4.0 maintained across five consecutive semesters.
 Technical Skills
-
-Big Data Ecosystems: Hadoop, MapReduce, HDFS, Yarn, Pig,
-Hive, Flume, AWS
-
-Programming languages: Java, C++, XML, HTML.
-
-Scripting Languages: PHP, Javascript, Python
-
-Operating Systems: Windows, Linux, UNIX, Ubuntu
-
-Tools: Eclipse, NetBeans, JBuilder
-
-Methodology: Agile, Design Patterns
-
-EXPERIENCE / INTERNSHIP
-
-Intern Hadoop Developer » HCL, Gurgaon May 2018 - Aug 2018
-
-Stored data by writing Mapreduce and Pig jobs based on business.
-requirements.
-
-Analysed and drew insights from datasets and participated in multiple big data
-POC to evaluate different architectures, tools and vendor products.
-Documented day to day tasks,and assisted with loading data to hive tables.
-
-PROJECTS
-
-Cloud Computing Platform for Big Data Adoption and Analytics
-
-= Designed a scalable database management system for updating intensive
-application workloads and descriptive and deep analytics.
+Languages: Go, JavaScript, SQL
+Backend: REST APIs, gRPC, Gin, GORM, Uber Fx
+Databases: PostgreSQL, MongoDB
+Tools: Docker, Git, GitHub, Linux
+Concepts: API Design, Database Design, Dependency Injection
+Experience
+Astergaze Technologies Nov 2025 – Apr 2026
+Part-Time Backend Engineer
+- Developed and maintained backend services using Go.
+- Designed APIs and contributed to database-related development tasks.
+- Worked closely with engineering teams in feature implementation and maintenance.
+Astergaze Technologies May 2025 – Oct 2025
+Backend Intern (Go)
+- Built backend services and APIs using Go.
+- Implemented a Support Chat System from scratch.
+- Worked with REST APIs, gRPC, PostgreSQL, and Docker.
+- Participated in Agile software development practices.
+Projects
+Blog gRPC Service (Go, gRPC, PostgreSQL)
+- Developed a blog backend service using Go, gRPC, PostgreSQL, and GORM.
+- Implemented CRUD operations, service layers, and database integration.
+- Applied dependency injection using Uber Fx and modular architecture principles.
+Support Chat System
+- Designed and implemented a backend support chat module during internship.
+- Developed APIs, messaging workflows, and database schema design.
+Colorectal Polyp Segmentation using U-Net
+- Developed an automated image segmentation system using the U-Net architecture.
+- Achieved Dice Score of 0.8048 and IoU of 0.7198 on the Kvasir-SEG dataset.
+Education
+Nepal College of Information Technology (NCIT)
+Bachelor of Engineering in Software Engineering Ongoing
+- GPA 4.0 maintained in five consecutive semesters.
+1
+Leadership
+IEEE NCIT Chair Jan 2026 – Present
+- Leading student branch activities, technical events, and member engagement initiatives.
+IEEE NCIT Treasurer Dec 2024 – Jan 2026
+- Contributed to managing financial activities, organizing workshops, competitions, and branch activi-
+ties.
+Achievements
+- GPA 4.0 maintained for five consecutive semesters.
+- Scholarship recipient at Pokhara University Engineering Program.
+- Best Academic Award (2023) in +2.
+References
+Mr. Niranjan Khakurel
+Principal, NCIT
+Email: niranjan@ncit.edu.np
+Phone :+977 985-1448517
+2

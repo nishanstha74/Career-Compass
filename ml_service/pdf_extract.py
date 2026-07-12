@@ -474,7 +474,9 @@ def extract_resume_text(file_path, lang='eng'):
 
 
 if __name__ == "__main__":
-    file_path = "mock/resume30.jpeg"  # or "resume.docx" / "resume.pdf"
+    # RESUME_PATH lives in pipeline.py — the single source of truth.
+    # Change the resume there, not here.
+    from pipeline import RESUME_PATH as file_path
 
     text, method, report = extract_resume_text(file_path)
 

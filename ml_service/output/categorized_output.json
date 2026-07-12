@@ -1,46 +1,49 @@
 {
   "name": "",
   "contact": {
-    "email": "",
-    "phone": ""
+    "email": "rajan.raj@ieee.org",
+    "phone": "+977 9829113768"
   },
   "education": {
-    "raw": "LVYVUN OLS\n\n2022 Data Annotation for AI at DY Patil Institute of Technology",
+    "raw": "Nepal College of Information Technology (NCIT)\nBachelor of Engineering in Software Engineering Ongoing\n- GPA 4.0 maintained in five consecutive semesters.\n1",
     "institutions": [
-      "Data Annotation for AI",
-      "DY Patil Institute of Technology"
+      "Nepal College of Information Technology",
+      "NCIT",
+      "Bachelor of Engineering",
+      "GPA"
     ],
     "dates": []
   },
   "experience": {
-    "raw": "PLOYMENT HISTORY\n\nData Annotator | Expertia AI| Chennai\nJun 2023 - Present\n\ne Accurately annotating and labelling data according to predefined guidelines and specifications,\nensuring high-quality and consistent annotations for machine learning and data analysis purposes.\nConducting thorough quality checks and validations on annotated data to identify and rectify any\nerrors or inconsistencies, maintaining data integrity and reliability.\nAnalysing annotated data to identify patterns, trends, and insights, providing valuable input to\nimprove annotation processes and enhance data quality.\ne Documenting annotation processes, guidelines, and best practices, ensuring clear and\ncomprehensive documentation for reference and training purposes.\nCollaborating with cross-functional teams, including data scientists, machine learning engineers,\nand project managers, to understand project requirements and provide support as needed.\nProviding feedback and suggestions for process improvements and optimisations to streamline\nannotation workflows and increase efficiency.\n\nERNSHIPS\n\nIntern Data Annotator | Stark Technologies | Chennai\nAug 2022 - Mar 2023\ne Assisted researchers to determine and understand input data and annotated by drawing boxes to\nhighlight areas of interest in images.\ne Supported researchers in training deep learning models through accurately categorising content,\nlabeling images, and annotating data.\ne Reported and documented issues faced from data annotation to research team and discuss\nsolutions to improve data.\n\nUCATION\n2 B.Tech in Computer Science -> SRM University, Chennai",
+    "raw": "Astergaze Technologies Nov 2025 – Apr 2026\nPart-Time Backend Engineer\n- Developed and maintained backend services using Go.\n- Designed APIs and contributed to database-related development tasks.\n- Worked closely with engineering teams in feature implementation and maintenance.\nAstergaze Technologies May 2025 – Oct 2025\nBackend Intern (Go)\n- Built backend services and APIs using Go.\n- Implemented a Support Chat System from scratch.\n- Worked with REST APIs, gRPC, PostgreSQL, and Docker.\n- Participated in Agile software development practices.",
     "companies": [
-      "Expertia",
-      "Intern Data",
-      "Assisted",
-      "Computer Science -> SRM University",
-      "Chennai"
+      "Backend Intern"
     ],
     "dates": [
-      "2023 - Present",
-      "2022 - Mar 2023"
+      "Nov 2025",
+      "2026",
+      "May 2025",
+      "Oct 2025"
     ]
   },
-  "skills": {
-    "raw": ""
-  },
+  "skills": [],
   "projects": {
-    "raw": "e A Personal Assistant: Created a simple stand-alone application that helps less tech savvy people in\nthe world to use the computer without feeling ignorant or computer illiterate.\n\n¢ The application works same like Siri/ Google Assistant etc. But the application deals with the\ncomputer itself mainly. The U.I of the application is self- explanatory and minimal. Currently it\ntakes text as input as most of the people are not very good at speaking."
+    "raw": "Blog gRPC Service (Go, gRPC, PostgreSQL)\n- Developed a blog backend service using Go, gRPC, PostgreSQL, and GORM.\n- Implemented CRUD operations, service layers, and database integration.\n- Applied dependency injection using Uber Fx and modular architecture principles.\nSupport Chat System\n- Designed and implemented a backend support chat module during internship.\n- Developed APIs, messaging workflows, and database schema design.\nColorectal Polyp Segmentation using U-Net\n- Developed an automated image segmentation system using the U-Net architecture.\n- Achieved Dice Score of 0.8048 and IoU of 0.7198 on the Kvasir-SEG dataset."
   },
   "certifications": "",
-  "languages": "",
-  "summary": "",
-  "leadership": "",
-  "achievements": "",
-  "references": "",
-  "activities": "e Participated in ACM ICPC coding competition, and secured 3rd Position.\ne Appointed as a Team Leader of AI Club-SRM University.\ne Secured 2nd Position in Hackathon 2021.",
+  "languages": "Backend: REST APIs, gRPC, Gin, GORM, Uber Fx\nDatabases: PostgreSQL, MongoDB\nTools: Docker, Git, GitHub, Linux\nConcepts: API Design, Database Design, Dependency Injection",
+  "summary": "JuniorBackendEngineerwithprofessionalexperiencedevelopingbackendservicesusingGo. Experienced\nin REST APIs, gRPC, PostgreSQL, Docker, and scalable backend architecture. Worked as a Backend\nIntern and Part-Time Backend Engineer at Astergaze Technologies. Strong academic background with\na GPA of 4.0 maintained across five consecutive semesters.",
+  "leadership": "IEEE NCIT Chair Jan 2026 – Present\n- Leading student branch activities, technical events, and member engagement initiatives.\nIEEE NCIT Treasurer Dec 2024 – Jan 2026\n- Contributed to managing financial activities, organizing workshops, competitions, and branch activi-\nties.",
+  "achievements": "- GPA 4.0 maintained for five consecutive semesters.\n- Scholarship recipient at Pokhara University Engineering Program.\n- Best Academic Award (2023) in +2.",
+  "references": "Mr. Niranjan Khakurel\nPrincipal, NCIT\nEmail: niranjan@ncit.edu.np\nPhone :+977 985-1448517\n2",
+  "activities": "",
   "_meta": {
     "method": "spacy",
     "confidence": 0.75
-  }
+  },
+  "full_text": "JuniorBackendEngineerwithprofessionalexperiencedevelopingbackendservicesusingGo. Experienced\nin REST APIs, gRPC, PostgreSQL, Docker, and scalable backend architecture. Worked as a Backend\nIntern and Part-Time Backend Engineer at Astergaze Technologies. Strong academic background with\na GPA of 4.0 maintained across five consecutive semesters. Astergaze Technologies Nov 2025 – Apr 2026\nPart-Time Backend Engineer\n- Developed and maintained backend services using Go.\n- Designed APIs and contributed to database-related development tasks.\n- Worked closely with engineering teams in feature implementation and maintenance.\nAstergaze Technologies May 2025 – Oct 2025\nBackend Intern (Go)\n- Built backend services and APIs using Go.\n- Implemented a Support Chat System from scratch.\n- Worked with REST APIs, gRPC, PostgreSQL, and Docker.\n- Participated in Agile software development practices. Nepal College of Information Technology (NCIT)\nBachelor of Engineering in Software Engineering Ongoing\n- GPA 4.0 maintained in five consecutive semesters.\n1 Blog gRPC Service (Go, gRPC, PostgreSQL)\n- Developed a blog backend service using Go, gRPC, PostgreSQL, and GORM.\n- Implemented CRUD operations, service layers, and database integration.\n- Applied dependency injection using Uber Fx and modular architecture principles.\nSupport Chat System\n- Designed and implemented a backend support chat module during internship.\n- Developed APIs, messaging workflows, and database schema design.\nColorectal Polyp Segmentation using U-Net\n- Developed an automated image segmentation system using the U-Net architecture.\n- Achieved Dice Score of 0.8048 and IoU of 0.7198 on the Kvasir-SEG dataset. Backend: REST APIs, gRPC, Gin, GORM, Uber Fx\nDatabases: PostgreSQL, MongoDB\nTools: Docker, Git, GitHub, Linux\nConcepts: API Design, Database Design, Dependency Injection IEEE NCIT Chair Jan 2026 – Present\n- Leading student branch activities, technical events, and member engagement initiatives.\nIEEE NCIT Treasurer Dec 2024 – Jan 2026\n- Contributed to managing financial activities, organizing workshops, competitions, and branch activi-\nties. - GPA 4.0 maintained for five consecutive semesters.\n- Scholarship recipient at Pokhara University Engineering Program.\n- Best Academic Award (2023) in +2.",
+  "n_positions_held": 1,
+  "has_career_objective": true,
+  "has_certification": false,
+  "has_languages": true
 }
