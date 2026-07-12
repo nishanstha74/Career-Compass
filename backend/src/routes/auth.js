@@ -1,0 +1,24 @@
+import express from "express";
+import {
+  register,
+  login,
+  logout,
+  checkAuth,
+} from "../controllers/auth.controller.js";
+import { protectRoute } from "../middleware/auth.middleware.js";
+
+const router = express.Router();
+
+// 1. REGISTER ENDPOINT
+router.post("/register", register);
+
+// 2. LOGIN ENDPOINT
+router.post("/login", login);
+
+// 3. LOGOUT ENDPOINT
+router.post("/logout", logout);
+
+// 4. CHECK AUTH ENDPOINT
+router.get("/check", protectRoute, checkAuth);
+
+export default router;

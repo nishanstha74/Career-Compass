@@ -8,6 +8,7 @@ import authRoutes from "./src/routes/auth.js"; // 👈 Import your routes
 
 // Load Environment Variables (.env)
 dotenv.config();
+console.log(process.env.MONGO_URI);
 
 const app = express();
 
