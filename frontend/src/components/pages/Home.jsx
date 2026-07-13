@@ -109,18 +109,48 @@ function StepCard({ step, index }) {
   );
 }
 
+// ---------- Typewriter Headline ----------
+function TypewriterHeadline() {
+  const [text, setText] = useState("");
+  const fullText = "Empower Your Tech Career Path with Adaptive Intelligence";
+
+  useEffect(() => {
+    let i = 0;
+    setText("");
+    const interval = setInterval(() => {
+      setText(fullText.slice(0, i + 1));
+      i++;
+      if (i >= fullText.length) clearInterval(interval);
+    }, 55); // typing speed
+    return () => clearInterval(interval);
+  }, []);
+
+  const baseLength = "Empower Your Tech Career Path with ".length;
+  const baseText = text.slice(0, baseLength);
+  const highlightText = text.slice(baseLength);
+
+  return (
+    <>
+      {baseText}
+      {highlightText && (
+        <span className="bg-linear-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
+          {highlightText}
+        </span>
+      )}
+      <span className="animate-pulse border-r-4 border-indigo-600 ml-1 inline-block h-[0.8em] align-middle"></span>
+    </>
+  );
+}
+
 export default function Home() {
   const navigate = useNavigate();
   const [feedbackOpen, setFeedbackOpen] = useState(false);
 
-  // Handler for manual button clicks
   const handleGetStarted = () => {
-    // Navigate to signup or dashboard based on future JWT auth logic
     navigate("/signup");
   };
 
   const handleSignInClick = () => {
-    // Navigate to signin based on future JWT auth logic
     navigate("/signin");
   };
 
@@ -256,11 +286,8 @@ export default function Home() {
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-200 h-87.5 bg-indigo-500/5 blur-[120px] -z-10 rounded-full" />
 
           <div className="max-w-3xl mx-auto space-y-6">
-            <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 max-w-4xl mx-auto leading-tight md:leading-none">
-              Empower Your Tech Career Path with{" "}
-              <span className="bg-linear-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
-                Adaptive Intelligence
-              </span>
+            <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 max-w-4xl mx-auto leading-tight md:leading-none min-h-30 md:min-h-17.5">
+              <TypewriterHeadline />
             </h1>
 
             <p className="text-base md:text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
@@ -403,7 +430,7 @@ export default function Home() {
             <ul className="space-y-3 text-slate-300 font-medium text-[13px]">
               <li>
                 <a
-                  href="https://mail.google.com/mail/?view=cm&fs=1&to=shrestha.nishan060@gmail.com&su=CareerCompass%20Inquiry"
+                  href="https://mail.google.com/mail/?view=cm&fs=1&to=careercompass.dev26@gmail.com&su=CareerCompass%20Inquiry"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-indigo-400 transition-colors"
