@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { sendFeedback } from "../../api/feedback.js";
 
 export default function FeedbackModal({ open, onClose }) {
   const [name, setName] = useState("");
