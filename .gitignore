@@ -1,2 +1,18 @@
 ml_service/venv/
 venv
+# Python
+__pycache__/
+*.pyc
+
+# Virtual Environment
+venv/
+.venv/
+
+# ML Model Files
+*.joblib
+*.pkl
+
+# Output files
+output/
+*.json
+*.txt

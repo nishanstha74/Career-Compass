@@ -1,11 +1,16 @@
 """
 STEP 3 — Predict on New Data
 ------------------------------
-Loads the saved model + vectorizers and scores a resume against a job.
+Loads the saved model + text encoder and scores a resume against a job.
+
+CHANGES vs previous version:
+  - Loads encoder_kind.joblib to know whether text_vectorizer.joblib is
+    a TF-IDF vectorizer or a SentenceTransformer, and computes similarity
+    accordingly.
+  - NUMERIC_COLS matches the expanded feature set from preprocess.py.
 
 Run:
     python predict.py
-(edit the example resume/job dicts below, or import predict_match() elsewhere)
 """
 import joblib
 import numpy as np
@@ -14,53 +19,70 @@ import pandas as pd
 from preprocess import build_features
 
 model = joblib.load("model.joblib")
-resume_vectorizer = joblib.load("resume_vectorizer.joblib")
-job_vectorizer = joblib.load("job_vectorizer.joblib")
+text_encoder = joblib.load("text_vectorizer.joblib")
 feature_names = joblib.load("feature_names.joblib")
+try:
+    encoder_kind = joblib.load("encoder_kind.joblib")
+except FileNotFoundError:
+    encoder_kind = "tfidf"  # backward-compat with models saved before this change
+
+NUMERIC_COLS = [
+    "skill_overlap_ratio",
+    "skill_jaccard",
+    "n_skill_matches",
+    "missing_required_skills",
+    "skill_precision",
+    "skill_recall",
+    "skill_f1",
+    "n_candidate_skills",
+    "n_required_skills",
+    "n_positions_held",
+    "required_min_years",
+    "candidate_years",
+    "experience_gap",
+    "candidate_education_level",
+    "required_education_level",
+    "education_level_diff",
+    "education_match",
+    "n_certifications",
+    "has_certification",
+    "n_languages",
+    "has_languages",
+    "has_career_objective",
+]
+
+
+def _cosine_sim(a, b):
+    if hasattr(a, "toarray"):
+        a = a.toarray()
+    if hasattr(b, "toarray"):
+        b = b.toarray()
+    num = (a * b).sum(axis=1)
+    denom = (np.linalg.norm(a, axis=1) * np.linalg.norm(b, axis=1)) + 1e-9
+    return num / denom
 
 
 def predict_match(resume_row: dict, job_row: dict) -> float:
     """
     resume_row / job_row: dicts with the SAME keys as the original CSV columns
-    for a single candidate / single job posting, e.g.:
-        resume_row = {
-            "career_objective": "...",
-            "skills": "['Python', 'SQL', 'Machine Learning']",
-            "responsibilities": "...",
-            "positions": "['Data Analyst']",
-            "certification_skills": None,
-            "languages": None,
-        }
-        job_row = {
-            "job_position_name": "Data Scientist",
-            "skills_required": "Python\\nSQL\\nMachine Learning",
-            "responsibilities.1": "...",
-            "educationaL_requirements": "B.Sc in CS",
-            "experiencere_requirement": "At least 3 years",
-        }
+    for a single candidate / single job posting. New optional keys used by
+    the expanded features: degree_names, start_dates, end_dates,
+    certification_skills, languages.
     """
     row = {**resume_row, **job_row}
     df_row = pd.DataFrame([row])
 
     feats = build_features(df_row)
-    X_num = feats[
-        [
-            "skill_overlap_ratio",
-            "n_candidate_skills",
-            "n_required_skills",
-            "n_positions_held",
-            "required_min_years",
-            "has_career_objective",
-            "has_certification",
-            "has_languages",
-        ]
-    ].values
+    X_num = feats[NUMERIC_COLS].values
 
-    r_vec = resume_vectorizer.transform(feats["resume_text"]).toarray()
-    j_vec = job_vectorizer.transform(feats["job_text"]).toarray()
-    num = (r_vec * j_vec).sum(axis=1)
-    denom = (np.linalg.norm(r_vec, axis=1) * np.linalg.norm(j_vec, axis=1)) + 1e-9
-    text_sim = (num / denom).reshape(-1, 1)
+    if encoder_kind == "embeddings":
+        r_vec = text_encoder.encode(list(feats["resume_text"]))
+        j_vec = text_encoder.encode(list(feats["job_text"]))
+    else:
+        r_vec = text_encoder.transform(feats["resume_text"]).toarray()
+        j_vec = text_encoder.transform(feats["job_text"]).toarray()
+
+    text_sim = _cosine_sim(r_vec, j_vec).reshape(-1, 1)
 
     X = np.hstack([X_num, text_sim])
     score = model.predict(X)[0]
@@ -73,6 +95,9 @@ if __name__ == "__main__":
         "skills": "['Python', 'SQL', 'Machine Learning', 'Tableau']",
         "responsibilities": "Built dashboards. Automated reports. Ran analyses.",
         "positions": "['Data Analyst']",
+        "degree_names": "['Bachelor of Science']",
+        "start_dates": "['Jan 2021']",
+        "end_dates": "['Present']",
         "certification_skills": None,
         "languages": None,
     }
