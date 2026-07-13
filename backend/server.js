@@ -2,13 +2,9 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import dotenv from "dotenv";
+import "dotenv/config"; // loads .env first
 import cookieParser from "cookie-parser";
 import authRoutes from "./src/routes/auth.js"; // 👈 Import your routes
-
-// Load Environment Variables (.env)
-dotenv.config();
-console.log(process.env.MONGO_URI);
 
 const app = express();
 
@@ -19,7 +15,8 @@ app.use(
     credentials: true,
   }),
 );
-app.use(express.json()); // Essential to read data sent from frontend signup/login
+app.use(express.json()); // Parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL‑encoded bodies (e.g., form submissions)
 app.use(cookieParser()); // Enable parsing cookies
 
 // Connect to MongoDB Atlas
@@ -40,6 +37,12 @@ app.get("/", (req, res) => {
 
 // App listener to keep process alive
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server is listening on http://localhost:${PORT}`);
+// Generic error‑handling middleware (must be after all route definitions)
+app.use((err, req, res, next) => {
+  console.error("⚠️ Unhandled error:", err);
+  res.status(500).json({ success: false, message: "Internal server error" });
 });
+
+app.listen(PORT, () =>
+  console.log(`🚀 Server is listening on http://localhost:${PORT}`),
+);

@@ -4,6 +4,7 @@ import {
   login,
   logout,
   checkAuth,
+  verifyEmail,
 } from "../controllers/auth.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 
@@ -18,7 +19,10 @@ router.post("/login", login);
 // 3. LOGOUT ENDPOINT
 router.post("/logout", logout);
 
-// 4. CHECK AUTH ENDPOINT
+// 4. EMAIL VERIFICATION ENDPOINT
+router.post("/verify-email", verifyEmail);
+
+// 5. CHECK AUTH ENDPOINT
 router.get("/check", protectRoute, checkAuth);
 
 export default router;
