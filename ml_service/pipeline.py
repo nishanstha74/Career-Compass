@@ -19,7 +19,7 @@ from ML_train.preprocess import build_features  # same feature builder train.py 
 # Anchored to this script's own folder (not the current working directory),
 # so it doesn't matter which directory you happen to run `python pipeline.py`
 # from — it always finds files saved next to train.py/pipeline.py.
-ARTIFACTS_DIR = os.path.dirname(os.path.abspath(__file__))
+ARTIFACTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ML_train")
 
 
 def _load_artifact(filename):
@@ -32,10 +32,40 @@ def _load_artifact(filename):
     return joblib.load(path)
 
 
-MODEL = _load_artifact("D:/PROJECT/Career-Compass/ml_service/ML_train/model.joblib")
-RESUME_VECTORIZER = _load_artifact("D:/PROJECT/Career-Compass/ml_service/ML_train/resume_vectorizer.joblib")
-JOB_VECTORIZER = _load_artifact("D:/PROJECT/Career-Compass/ml_service/ML_train/job_vectorizer.joblib")
-FEATURE_NAMES = _load_artifact("D:/PROJECT/Career-Compass/ml_service/ML_train/feature_names.joblib")
+# CHANGES vs previous version:
+#   - Loads the single shared "text_vectorizer.joblib" (+ "encoder_kind.joblib")
+#     instead of separate resume_vectorizer.joblib / job_vectorizer.joblib,
+#     which train.py no longer produces (it now fits ONE shared vectorizer,
+#     or a Sentence-BERT encoder if --embeddings was used).
+#   - Filenames only (no absolute D:/... paths) — ARTIFACTS_DIR already
+#     anchors these correctly; passing an absolute path bypassed that.
+MODEL = _load_artifact("model.joblib")
+TEXT_ENCODER = _load_artifact("text_vectorizer.joblib")
+FEATURE_NAMES = _load_artifact("feature_names.joblib")
+try:
+    ENCODER_KIND = _load_artifact("encoder_kind.joblib")
+except FileNotFoundError:
+    ENCODER_KIND = "tfidf"  # backward-compat with models saved before this change
+
+
+# CHANGES vs previous version:
+#   - NUMERIC_COLS now matches preprocess.py's expanded feature set exactly
+#     (skill_jaccard, skill_precision/recall/f1, candidate_years,
+#     experience_gap, education_*, n_certifications, n_languages, etc.)
+#     This is the list that was previously hand-duplicated and drifted out
+#     of sync — kept here as a single explicit constant for clarity, but
+#     the actual values come from build_features(), not from manual dict
+#     construction, so it can't drift again.
+NUMERIC_COLS = [
+    "skill_overlap_ratio", "skill_jaccard", "n_skill_matches",
+    "missing_required_skills", "skill_precision", "skill_recall", "skill_f1",
+    "n_candidate_skills", "n_required_skills", "n_positions_held",
+    "required_min_years", "candidate_years", "experience_gap",
+    "candidate_education_level", "required_education_level",
+    "education_level_diff", "education_match", "n_certifications",
+    "has_certification", "n_languages", "has_languages",
+    "has_career_objective",
+]
 
 
 # ── SINGLE SOURCE OF TRUTH FOR WHICH RESUME TO PROCESS ──
@@ -87,12 +117,6 @@ def load_jobs_from_dataset(csv_path: str = "resume_data.csv") -> list[dict]:
     skills_required, experiencere_requirement, etc.), not a separate
     normalized jobs table. This pulls out the unique job postings embedded
     in it, deduplicated by title + experience requirement.
-
-    NOTE: this reimplements a small amount of the same parsing preprocess.py's
-    build_features() does for the job side of each row. If build_features
-    already exposes a "get unique jobs" helper or parses these columns
-    differently, prefer reusing that directly so this stays in sync with
-    however the model was actually trained.
     """
     df = pd.read_csv(csv_path)
     df.columns = [c.replace("\ufeff", "") for c in df.columns]
@@ -119,6 +143,7 @@ def load_jobs_from_dataset(csv_path: str = "resume_data.csv") -> list[dict]:
             "company": "N/A",  # not present in this dataset
             "skills": _parse_list_cell(row["skills_required"]),
             "experience": row["experiencere_requirement"] if pd.notna(row["experiencere_requirement"]) else "",
+            "education_requirement": row["educationaL_requirements"] if pd.notna(row["educationaL_requirements"]) else "",
             "projects": row["responsibilities.1"] if pd.notna(row["responsibilities.1"]) else "",
             "required_min_years": _parse_min_years(row["experiencere_requirement"]),
         })
@@ -136,16 +161,59 @@ def train_job_matcher(jobs: list[dict], save_path="job_vectorizer.pkl"):
     print(f"Trained job vectorizer on {len(jobs)} postings — saved to {save_path}")
 
 
-def _skill_overlap_ratio(categorized_resume: dict, job: dict) -> float:
-    candidate_skills = set(s.lower() for s in categorized_resume.get("skills", []))
-    required_skills = set(s.lower() for s in job.get("skills", []))
-    if not required_skills:
-        return 0.0
-    return len(candidate_skills & required_skills) / len(required_skills)
+def _resume_to_raw_row(categorized_resume: dict, job: dict) -> dict:
+    """
+    CHANGES vs previous version:
+      This replaces the old hand-built numeric-feature dict entirely. Instead
+      of computing skill_overlap_ratio / n_positions_held / etc. by hand here
+      (which is what silently drifted out of sync when preprocess.py's
+      feature set expanded), this function maps categorize_resume()'s output
+      + a job dict into the SAME raw column names build_features() expects
+      from the original CSV. We then hand this to build_features() directly
+      — the exact function train.py used — so pipeline.py can never drift
+      out of sync with preprocess.py again.
+
+    ASSUMPTION: categorize_resume() may not currently return degree_names,
+    start_dates/end_dates, certifications, or languages as separate
+    structured fields — check NLP/categorize.py's actual output keys and
+    adjust the .get() calls below if the real key names differ. Until then,
+    these fall back to empty, meaning experience_gap/education_match/etc.
+    will compute to safe defaults rather than real signal at inference time.
+    """
+    skills_list = categorized_resume.get("skills", [])
+    positions_list = categorized_resume.get("positions", [])
+    certifications_list = categorized_resume.get("certifications", [])
+    languages_list = categorized_resume.get("languages", [])
+    degrees_list = categorized_resume.get("degrees", [])
+    start_dates_list = categorized_resume.get("start_dates", [])
+    end_dates_list = categorized_resume.get("end_dates", [])
+
+    return {
+        "career_objective": categorized_resume.get(
+            "career_objective", categorized_resume.get("summary", "")
+        ),
+        "skills": str(skills_list),  # build_features expects a CSV-style "['a','b']" string
+        "responsibilities": categorized_resume.get(
+            "responsibilities", categorized_resume.get("full_text", "")
+        ),
+        "positions": str(positions_list),
+        "certification_skills": str(certifications_list) if certifications_list else None,
+        "languages": str(languages_list) if languages_list else None,
+        "degree_names": str(degrees_list) if degrees_list else None,
+        "start_dates": str(start_dates_list) if start_dates_list else None,
+        "end_dates": str(end_dates_list) if end_dates_list else None,
+        "job_position_name": job.get("title", ""),
+        "skills_required": "\n".join(job.get("skills", [])),
+        "responsibilities.1": job.get("projects", ""),
+        "educationaL_requirements": job.get("education_requirement", ""),
+        "experiencere_requirement": job.get("experience", ""),
+    }
 
 
-def _cosine_sim_rowwise(A, B):
-    A, B = A.toarray(), B.toarray()
+def _cosine_sim_rowwise_arrays(A, B):
+    """Cosine similarity between two dense arrays, row by row. Works for
+    both TF-IDF (.toarray()'d beforehand) and Sentence-BERT embeddings,
+    which are already dense numpy arrays."""
     num = (A * B).sum(axis=1)
     denom = (np.linalg.norm(A, axis=1) * np.linalg.norm(B, axis=1)) + 1e-9
     return num / denom
@@ -153,39 +221,35 @@ def _cosine_sim_rowwise(A, B):
 
 def _score_jobs_with_model(categorized_resume: dict, jobs: list[dict]) -> pd.DataFrame:
     """
-    Builds the same numeric + text-similarity features train.py used, one row
-    per (resume, job) pair, then predicts matched_score with the trained model.
+    CHANGES vs previous version:
+      Builds ONE raw row per (resume, job) pair in the CSV's original shape,
+      runs it through build_features() (the exact function train.py used),
+      then scores with the trained model. This keeps pipeline.py permanently
+      in sync with preprocess.py — no more hand-copied feature lists that
+      can silently fall behind.
+      Also fixed to use the single shared TEXT_ENCODER + ENCODER_KIND
+      (TF-IDF or Sentence-BERT) instead of the old separate
+      resume_vectorizer/job_vectorizer files, which train.py no longer saves.
     """
-    rows = []
-    for job in jobs:
-        rows.append({
-            "resume_text": categorized_resume.get("full_text", ""),
-            "job_text": " ".join([
-                job.get("title", ""),
-                job.get("experience", ""),
-                job.get("projects", ""),
-                " ".join(job.get("skills", [])),
-            ]),
-            "skill_overlap_ratio": _skill_overlap_ratio(categorized_resume, job),
-            "n_candidate_skills": len(categorized_resume.get("skills", [])),
-            "n_required_skills": len(job.get("skills", [])),
-            "n_positions_held": categorized_resume.get("n_positions_held", 0),
-            "required_min_years": job.get("required_min_years", 0),
-            "has_career_objective": int(categorized_resume.get("has_career_objective", False)),
-            "has_certification": int(categorized_resume.get("has_certification", False)),
-            "has_languages": int(categorized_resume.get("has_languages", False)),
-        })
-    df = pd.DataFrame(rows)
+    raw_rows = [_resume_to_raw_row(categorized_resume, job) for job in jobs]
+    raw_df = pd.DataFrame(raw_rows)
 
-    resume_tfidf = RESUME_VECTORIZER.transform(df["resume_text"])
-    job_tfidf = JOB_VECTORIZER.transform(df["job_text"])
-    text_similarity = _cosine_sim_rowwise(resume_tfidf, job_tfidf)
+    feats = build_features(raw_df)
 
-    X_numeric = df[[c for c in FEATURE_NAMES if c != "text_similarity"]].values
+    if ENCODER_KIND == "embeddings":
+        r_vec = TEXT_ENCODER.encode(list(feats["resume_text"]))
+        j_vec = TEXT_ENCODER.encode(list(feats["job_text"]))
+    else:
+        r_vec = TEXT_ENCODER.transform(feats["resume_text"]).toarray()
+        j_vec = TEXT_ENCODER.transform(feats["job_text"]).toarray()
+
+    text_similarity = _cosine_sim_rowwise_arrays(r_vec, j_vec)
+
+    X_numeric = feats[NUMERIC_COLS].values
     X = np.hstack([X_numeric, text_similarity.reshape(-1, 1)])
 
-    df["score"] = MODEL.predict(X)
-    return df
+    feats["score"] = MODEL.predict(X)
+    return feats
 
 
 def get_job_matches(resume_file_path: str, jobs: list[dict], top_n=5):
@@ -212,7 +276,9 @@ if __name__ == "__main__":
     # No live API — job postings live inside resume_data.csv itself, so we
     # pull the unique postings out of it directly. Re-run this whenever the
     # dataset is updated/replaced.
-    DATASET_PATH = os.path.join(ARTIFACTS_DIR, "D:/PROJECT/Career-Compass/ml_service/dataset/resume_data.csv")
+    DATASET_PATH = os.path.join(
+        os.path.dirname(ARTIFACTS_DIR), "dataset", "resume_data.csv"
+    )
     jobs = load_jobs_from_dataset(DATASET_PATH)
     train_job_matcher(jobs)
 
