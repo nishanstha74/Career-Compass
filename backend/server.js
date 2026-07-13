@@ -4,7 +4,9 @@ import mongoose from "mongoose";
 import cors from "cors";
 import "dotenv/config"; // loads .env first
 import cookieParser from "cookie-parser";
+
 import authRoutes from "./src/routes/auth.js"; // 👈 Import your routes
+import feedbackRoutes from "./src/routes/feedback.js"; // feedback endpoint
 
 const app = express();
 
@@ -29,6 +31,7 @@ mongoose
 
 // Wire up your Endpoints
 app.use("/api/auth", authRoutes); // All endpoints will now be at http://localhost:5000/api/auth/register etc.
+app.use("/api/feedback", feedbackRoutes); // feedback endpoint
 
 // Root verification endpoint
 app.get("/", (req, res) => {
