@@ -20,14 +20,7 @@ export default function FeedbackModal({ open, onClose }) {
 
     setStatus("sending");
     try {
-      //  Point explicitly to your Node.js backend port (e.g., 5000)
-      const res = await fetch("http://localhost:5000/api/feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), message: message.trim() }),
-      });
-      if (!res.ok) throw new Error("Request failed");
-
+      await sendFeedback({ name: name.trim(), message: message.trim() });
       setStatus("sent");
       setName("");
       setMessage("");
