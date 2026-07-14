@@ -74,7 +74,7 @@ NUMERIC_COLS = [
 # when run standalone, so both scripts always agree on which file is being
 # processed — no more editing two separate hardcoded paths in two files.
 # A CLI arg still overrides this if you pass one: `python pipeline.py foo.pdf`
-RESUME_PATH = "mock/resume23.jpeg"
+RESUME_PATH = "mock/resume03.jpeg"
 
 
 def process_resume(file_path: str) -> dict:
@@ -161,47 +161,113 @@ def train_job_matcher(jobs: list[dict], save_path="job_vectorizer.pkl"):
     print(f"Trained job vectorizer on {len(jobs)} postings — saved to {save_path}")
 
 
+# ── Helpers to normalize categorize_resume()'s mixed-shape output ──
+# categorize_resume() can return the SAME key as either a raw string
+# (spaCy path), a dict with a "raw" key (spaCy entity-extraction path), or
+# a list of dicts (Gemini path) — these three helpers absorb that
+# variability so _resume_to_raw_row() below can treat every field uniformly.
+
+def _blob_from_field(val) -> str:
+    """
+    Normalizes a categorize_resume() field into a single text blob, since
+    the same key can be a raw string (spaCy path: e.g. sections.get("education")),
+    a dict with a "raw" key (spaCy entity-extraction path), or a list of dicts
+    (Gemini path, e.g. education/experience entries).
+    """
+    if val is None:
+        return ""
+    if isinstance(val, dict):
+        return str(val.get("raw", ""))
+    if isinstance(val, list):
+        parts = []
+        for item in val:
+            if isinstance(item, dict):
+                parts.append(" ".join(str(v) for v in item.values() if v))
+            else:
+                parts.append(str(item))
+        return " ".join(parts)
+    return str(val)
+
+
+def _list_from_field(val) -> list:
+    """
+    Normalizes a categorize_resume() field into a list of strings — used for
+    certifications/languages, which are a raw text string on the spaCy path
+    but an actual list on the Gemini path.
+    """
+    if val is None:
+        return []
+    if isinstance(val, list):
+        return [str(v).strip() for v in val if v and str(v).strip()]
+    if isinstance(val, str):
+        parts = re.split(r'[,\n•●▪\|/]+', val)
+        return [p.strip() for p in parts if p.strip()]
+    return []
+
+
+def _degree_names_from_education(education_val) -> list:
+    """
+    education is {"raw": ..., "institutions": [...], "dates": [...]} on the
+    spaCy path, or a list of {"degree", "institution", "year"} dicts on the
+    Gemini path. Either way we just need SOME text blob(s) containing degree
+    keywords (bachelor/master/phd/etc) for preprocess.py's _degree_level
+    regex to scan — it doesn't need clean structured degree names, just text
+    to search.
+    """
+    if isinstance(education_val, list):
+        degrees = [e.get("degree", "") for e in education_val if isinstance(e, dict)]
+        return [d for d in degrees if d]
+    if isinstance(education_val, dict):
+        raw = education_val.get("raw", "")
+        return [raw] if raw else []
+    if isinstance(education_val, str) and education_val.strip():
+        return [education_val]
+    return []
+
+
 def _resume_to_raw_row(categorized_resume: dict, job: dict) -> dict:
     """
     CHANGES vs previous version:
-      This replaces the old hand-built numeric-feature dict entirely. Instead
-      of computing skill_overlap_ratio / n_positions_held / etc. by hand here
-      (which is what silently drifted out of sync when preprocess.py's
-      feature set expanded), this function maps categorize_resume()'s output
-      + a job dict into the SAME raw column names build_features() expects
-      from the original CSV. We then hand this to build_features() directly
-      — the exact function train.py used — so pipeline.py can never drift
-      out of sync with preprocess.py again.
+      Replaces the earlier guessed field mapping (which assumed flat
+      "degrees"/"start_dates"/"end_dates" keys that don't actually exist)
+      with one based on categorize.py's REAL output shape: skills is a
+      flat list (post _add_ml_features()), but experience/education/
+      certifications/languages can each be either a raw string, a dict
+      with "raw", or a list of dicts depending on whether the spaCy or
+      Gemini path fired. The three helpers above absorb that variability.
 
-    ASSUMPTION: categorize_resume() may not currently return degree_names,
-    start_dates/end_dates, certifications, or languages as separate
-    structured fields — check NLP/categorize.py's actual output keys and
-    adjust the .get() calls below if the real key names differ. Until then,
-    these fall back to empty, meaning experience_gap/education_match/etc.
-    will compute to safe defaults rather than real signal at inference time.
+    Field mapping (per categorize.py):
+      - skills           -> already a flat list after _add_ml_features()
+      - experience       -> dict{"raw","companies","dates"} (spaCy) or
+                            list[{"title","company","duration","description"}] (Gemini)
+      - education        -> dict{"raw","institutions","dates"} (spaCy) or
+                            list[{"degree","institution","year"}] (Gemini)
+      - certifications   -> raw string (spaCy) or list (Gemini)
+      - languages        -> raw string (spaCy) or list (Gemini)
+      - summary          -> raw string, both paths
+      - n_positions_held -> already computed by _add_ml_features()
+
+    NOTE: categorize_resume() doesn't produce separate start_dates/end_dates
+    lists, so those are left as None here. That's fine — build_features()
+    already falls back to an n_positions_held-based proxy for
+    candidate_years when those columns are missing/unparseable, so
+    experience_gap still gets a real (if rougher) value instead of a dead
+    constant.
     """
-    skills_list = categorized_resume.get("skills", [])
-    positions_list = categorized_resume.get("positions", [])
-    certifications_list = categorized_resume.get("certifications", [])
-    languages_list = categorized_resume.get("languages", [])
-    degrees_list = categorized_resume.get("degrees", [])
-    start_dates_list = categorized_resume.get("start_dates", [])
-    end_dates_list = categorized_resume.get("end_dates", [])
+    n_positions = categorized_resume.get("n_positions_held", 0)
 
     return {
-        "career_objective": categorized_resume.get(
-            "career_objective", categorized_resume.get("summary", "")
-        ),
-        "skills": str(skills_list),  # build_features expects a CSV-style "['a','b']" string
-        "responsibilities": categorized_resume.get(
-            "responsibilities", categorized_resume.get("full_text", "")
-        ),
-        "positions": str(positions_list),
-        "certification_skills": str(certifications_list) if certifications_list else None,
-        "languages": str(languages_list) if languages_list else None,
-        "degree_names": str(degrees_list) if degrees_list else None,
-        "start_dates": str(start_dates_list) if start_dates_list else None,
-        "end_dates": str(end_dates_list) if end_dates_list else None,
+        "career_objective": categorized_resume.get("summary", ""),
+        "skills": str(categorized_resume.get("skills", [])),
+        "responsibilities": _blob_from_field(categorized_resume.get("experience", "")),
+        # dummy list of the right LENGTH so count_positions() gets the real
+        # count — build_features only calls len(safe_parse_list(cell)) on this.
+        "positions": str(list(range(n_positions))),
+        "certification_skills": str(_list_from_field(categorized_resume.get("certifications"))) or None,
+        "languages": str(_list_from_field(categorized_resume.get("languages"))) or None,
+        "degree_names": str(_degree_names_from_education(categorized_resume.get("education"))) or None,
+        #"start_dates": None,
+        #"end_dates": None,
         "job_position_name": job.get("title", ""),
         "skills_required": "\n".join(job.get("skills", [])),
         "responsibilities.1": job.get("projects", ""),
@@ -221,15 +287,11 @@ def _cosine_sim_rowwise_arrays(A, B):
 
 def _score_jobs_with_model(categorized_resume: dict, jobs: list[dict]) -> pd.DataFrame:
     """
-    CHANGES vs previous version:
-      Builds ONE raw row per (resume, job) pair in the CSV's original shape,
-      runs it through build_features() (the exact function train.py used),
-      then scores with the trained model. This keeps pipeline.py permanently
-      in sync with preprocess.py — no more hand-copied feature lists that
-      can silently fall behind.
-      Also fixed to use the single shared TEXT_ENCODER + ENCODER_KIND
-      (TF-IDF or Sentence-BERT) instead of the old separate
-      resume_vectorizer/job_vectorizer files, which train.py no longer saves.
+    Builds ONE raw row per (resume, job) pair in the CSV's original shape,
+    runs it through build_features() (the exact function train.py used),
+    then scores with the trained model. This keeps pipeline.py permanently
+    in sync with preprocess.py — no more hand-copied feature lists that
+    can silently fall behind.
     """
     raw_rows = [_resume_to_raw_row(categorized_resume, job) for job in jobs]
     raw_df = pd.DataFrame(raw_rows)
@@ -249,6 +311,11 @@ def _score_jobs_with_model(categorized_resume: dict, jobs: list[dict]) -> pd.Dat
     X = np.hstack([X_numeric, text_similarity.reshape(-1, 1)])
 
     feats["score"] = MODEL.predict(X)
+
+    # TEMP DIAGNOSTIC — confirms features actually vary per job instead of
+    # being stuck at constants. Safe to remove once you've confirmed this.
+    print(feats[NUMERIC_COLS + ["score"]].to_string())
+
     return feats
 
 
