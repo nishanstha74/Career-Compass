@@ -130,8 +130,12 @@ export default function Sidebar({
           }`}
         >
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-inner uppercase">
-              {user.firstName[0]}
+            <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-inner uppercase overflow-hidden">
+              {profilePhoto ? (
+                <img src={profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                user.firstName[0]
+              )}
             </div>
             {!navCollapsed && (
               <div className="truncate">

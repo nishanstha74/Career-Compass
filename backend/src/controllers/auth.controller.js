@@ -193,6 +193,7 @@ export const login = async (req, res) => {
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
+      profilePhoto: user.profilePhoto,
     });
   } catch (error) {
     console.error("Error in login controller:", error);
@@ -232,5 +233,33 @@ export const checkAuth = async (req, res) => {
       success: false,
       message: "Internal server error",
     });
+  }
+};
+
+export const updateProfilePhoto = async (req, res) => {
+  try {
+    const { profilePhoto } = req.body;
+    const userId = req.user._id;
+
+    if (!profilePhoto) {
+      return res.status(400).json({ success: false, message: "Profile photo is required" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePhoto },
+      { returnDocument: 'after' }
+    ).select("-password");
+
+    console.log(`✅ Profile image saved successfully for user: ${updatedUser.email}`);
+
+    res.status(200).json({
+      success: true,
+      message: "Profile photo updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.log("Error in updateProfilePhoto:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

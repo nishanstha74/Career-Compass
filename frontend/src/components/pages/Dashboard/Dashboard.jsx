@@ -132,7 +132,7 @@ export default function Dashboard() {
   const [showRegistrationBanner, setShowRegistrationBanner] = useState(false);
   const [showSidebarProfile, setShowSidebarProfile] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [profilePhoto, setProfilePhoto] = useState(authUser?.profilePhoto || null);
   const [profileBio, setProfileBio] = useState("Aspiring Frontend Developer");
   const [darkMode, setDarkMode] = useState(false);
   const [navCollapsed, setNavCollapsed] = useState(false);
@@ -140,6 +140,12 @@ export default function Dashboard() {
   const storedName = authUser?.fullName || localStorage.getItem("userName") || "User";
   const storedEmail = authUser?.email || localStorage.getItem("userEmail") || "No Email Provided";
   const firstName = storedName.split(" ")[0];
+
+  useEffect(() => {
+    if (authUser?.profilePhoto) {
+      setProfilePhoto(authUser.profilePhoto);
+    }
+  }, [authUser?.profilePhoto]);
 
   useEffect(() => {
     const registrationFlag = localStorage.getItem("isNewRegistration");
@@ -152,7 +158,7 @@ export default function Dashboard() {
   const user = {
     firstName: firstName,
     fullName: storedName,
-    imageUrl: null,
+    imageUrl: authUser?.profilePhoto || null,
     primaryEmailAddress: { emailAddress: storedEmail },
   };
 
@@ -185,8 +191,38 @@ export default function Dashboard() {
   const handleProfilePhotoChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Please choose an image under 2MB to ensure fast loading.");
+      return;
+    }
+
     const reader = new FileReader();
-    reader.onload = () => setProfilePhoto(reader.result);
+    reader.onload = async () => {
+      const base64Str = reader.result;
+      setProfilePhoto(base64Str); // Optimistic UI update
+
+      const toastId = toast.loading("Saving profile picture...");
+      try {
+        const response = await fetch("http://localhost:5000/api/auth/profile-photo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ profilePhoto: base64Str }),
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+          toast.success("Profile picture saved!", { id: toastId });
+          await checkAuth(); // update context
+        } else {
+          toast.error(data.message || "Failed to save picture", { id: toastId });
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error("Network error while saving", { id: toastId });
+      }
+    };
     reader.readAsDataURL(file);
   };
 

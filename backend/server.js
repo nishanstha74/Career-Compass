@@ -17,8 +17,8 @@ app.use(
     credentials: true,
   }),
 );
-app.use(express.json()); // Parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL‑encoded bodies (e.g., form submissions)
+app.use(express.json({ limit: "5mb" })); // Parse JSON bodies
+app.use(express.urlencoded({ extended: true, limit: "5mb" })); // Parse URL‑encoded bodies (e.g., form submissions)
 app.use(cookieParser()); // Enable parsing cookies
 
 // Connect to MongoDB Atlas

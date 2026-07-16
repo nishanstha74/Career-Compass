@@ -5,6 +5,7 @@ import {
   logout,
   checkAuth,
   verifyEmail,
+  updateProfilePhoto,
 } from "../controllers/auth.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 
@@ -24,5 +25,8 @@ router.post("/verify-email", verifyEmail);
 
 // 5. CHECK AUTH ENDPOINT
 router.get("/check", protectRoute, checkAuth);
+
+// 6. UPDATE PROFILE PHOTO
+router.post("/profile-photo", protectRoute, updateProfilePhoto);
 
 export default router;
