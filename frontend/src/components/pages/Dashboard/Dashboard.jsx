@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { Bell, LayoutDashboard, Target, Puzzle, Map } from "lucide-react";
+import { useAuth } from "../../../context/AuthContext";
 
 import Sidebar from "./Sidebar";
 import MainOverview from "./views/MainOverview";
@@ -119,6 +120,7 @@ const MOCK_RESULT = {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { user: authUser, checkAuth } = useAuth();
 
   const [targetRole, setTargetRole] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -135,8 +137,8 @@ export default function Dashboard() {
   const [darkMode, setDarkMode] = useState(false);
   const [navCollapsed, setNavCollapsed] = useState(false);
 
-  const storedName = localStorage.getItem("userName") || "User";
-  const storedEmail = localStorage.getItem("userEmail") || "No Email Provided";
+  const storedName = authUser?.fullName || localStorage.getItem("userName") || "User";
+  const storedEmail = authUser?.email || localStorage.getItem("userEmail") || "No Email Provided";
   const firstName = storedName.split(" ")[0];
 
   useEffect(() => {
@@ -161,12 +163,22 @@ export default function Dashboard() {
     day: "numeric",
   });
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
     console.log("Signing out safely...");
-    localStorage.removeItem("token");
+    try {
+      await fetch("http://localhost:5000/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (err) {
+      console.error("Logout request failed:", err);
+    }
+    
     localStorage.removeItem("userName");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("isNewRegistration");
+    
+    await checkAuth(); // update global context (will set user to null)
     navigate("/");
   };
 

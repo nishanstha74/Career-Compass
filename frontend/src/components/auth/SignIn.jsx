@@ -10,9 +10,11 @@ import {
   CheckCircle2,
   ArrowLeft,
 } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const { checkAuth } = useAuth();
 
   const [mode, setMode] = useState("signin");
 
@@ -114,6 +116,7 @@ export default function SignIn() {
         localStorage.setItem("userName", data.fullName);
         localStorage.setItem("userEmail", data.email);
         console.log("Login successful!");
+        await checkAuth(); // Trigger global state update
         navigate("/dashboard");
       } else {
         setErrors({ form: data.message || "Invalid credentials." });

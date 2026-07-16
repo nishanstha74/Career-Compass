@@ -11,9 +11,11 @@ import {
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 export default function SignUp() {
   const navigate = useNavigate();
+  const { checkAuth } = useAuth();
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -195,6 +197,8 @@ export default function SignUp() {
         // Save session items right away so dashboard components work smoothly
         localStorage.setItem("userName", data.fullName || name);
         localStorage.setItem("userEmail", data.email || email);
+
+        await checkAuth(); // Update global session state
 
         navigate("/dashboard");
       } else {
