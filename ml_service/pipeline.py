@@ -76,7 +76,12 @@ def main():
 
     print("\n========== TOP JOB MATCHES ==========\n")
 
-    print(json.dumps(result["final_ranked_jobs"], indent=4))
+    # print(json.dumps(result["final_ranked_jobs"], indent=4))
+    for i, job in enumerate(result["final_ranked_jobs"], start=1):
+        print(f"--- Job {i} ---")
+        for key, value in job.items():
+            print(f"  {key}: {value}")
+        print()
 
 
 if __name__ == "__main__":

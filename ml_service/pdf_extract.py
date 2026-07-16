@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# pip install pdfplumber PyMuPDF pytesseract pillow python-docx ultralytics
+# pip install pdfplumber PyMuPDF pytesseract pillow python-docx google-genai
+# (google-generativeai is deprecated — this uses the current google-genai SDK)
 
 import pdfplumber
 import fitz  # PyMuPDF
@@ -9,63 +10,241 @@ from PIL import Image
 import io
 import re
 import os
+import json
+import time
 from docx import Document
 
 # If on Windows, uncomment and set this:
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 
-# ─── YOLO CONFIG ───────────────────────────────────────────────────────────────
+# ─── GEMINI CONFIG (zero-shot section classification — no training needed) ───
 
-# Toggle this to False to disable YOLO entirely and fall back to the original
-# pdfplumber/PyMuPDF/OCR pipeline only (e.g. if ultralytics isn't installed,
-# or the trained model file isn't available on a given machine).
-USE_YOLO = True
+# Toggle this to False to disable Gemini entirely and fall back to the
+# original pdfplumber/PyMuPDF/OCR pipeline only (e.g. if the API key isn't
+# set, google-generativeai isn't installed, or you're offline).
+USE_GEMINI = True
 
-# Path to your trained weights from train_yolo.py.
-# Adjust this if your folder layout differs.
-YOLO_MODEL_PATH = r"D:\PROJECT\Career-Compass\runs\detect\runs\resume_sections\weights\best.pt"
-# Maps YOLO class names -> the canonical header text categorize.py's
+# Match whatever model/config categorize.py already uses for its Gemini
+# calls — reuse the same one here rather than paying for two setups.
+GEMINI_MODEL = os.getenv(
+    "GEMINI_MODEL",
+    "gemini-3.1-flash-lite"
+)
+
+# Same env var categorize.py reads its API key from.
+GEMINI_API_KEY_ENV_VAR = "GEMINI_API_KEY"
+
+# Free-tier Gemini enforces requests-per-minute / requests-per-day limits.
+# A single resume is nowhere near the per-request token limit (that's in the
+# hundreds of thousands+), so retries here are only ever about pacing
+# requests, not about the resume being "too long".
+GEMINI_MAX_RETRIES = 4
+GEMINI_BASE_BACKOFF_SECONDS = 2  # backs off 2s, 4s, 8s, 16s on repeated 429s
+
+SECTION_LABELS = [
+    "O",
+    "Header",
+    "Contact",
+    "Summary",
+    "Education",
+    "Experience",
+    "Skills",
+    "Projects",
+    "Languages",
+    "Certifications",
+]
+
+# Maps a section label -> the canonical header text categorize.py's
 # SECTION_HEADERS already recognizes. Keeping these in sync means the
 # reconstructed text below gets parsed with high confidence downstream.
-YOLO_CLASS_TO_HEADER = {
-    "header": None,          # goes at the very top, no header line needed
-    "contact": "Contact",
-    "summary": "Summary",
-    "education": "Education",
-    "experience": "Experience",
-    "skills": "Skills",
-    "projects": "Projects",
-    "languages": "Languages",
+LABEL_TO_HEADER = {
+    "Header": None,          # goes at the very top, no header line needed
+    "Contact": "Contact",
+    "Summary": "Summary",
+    "Education": "Education",
+    "Experience": "Experience",
+    "Skills": "Skills",
+    "Projects": "Projects",
+    "Languages": "Languages",
+    "Certifications": "Certifications",
 }
 
-_yolo_model = None  # lazy-loaded singleton, so the model is only loaded once
+_gemini_client = None  # lazy-initialized singleton
 
 
-def _get_yolo_model():
-    """Loads the trained YOLO model once and reuses it across calls."""
-    global _yolo_model
+def _get_gemini_client():
+    """Initializes the Gemini client once and reuses it across calls."""
+    global _gemini_client
 
-    if not USE_YOLO:
+    if not USE_GEMINI:
         return None
 
-    if _yolo_model is not None:
-        return _yolo_model
+    if _gemini_client is not None:
+        return _gemini_client
 
-    if not os.path.exists(YOLO_MODEL_PATH):
-        print(f"YOLO model not found at {YOLO_MODEL_PATH} — skipping YOLO layout detection.")
+    api_key = os.environ.get(GEMINI_API_KEY_ENV_VAR)
+    if not api_key:
+        print(f"{GEMINI_API_KEY_ENV_VAR} not set — skipping Gemini section classification.")
         return None
 
     try:
-        from ultralytics import YOLO
-        _yolo_model = YOLO(YOLO_MODEL_PATH)
-        return _yolo_model
+        from google import genai
+        _gemini_client = genai.Client(api_key=api_key)
+        return _gemini_client
     except ImportError:
-        print("ultralytics not installed — skipping YOLO layout detection. Run: pip install ultralytics")
+        print("google-genai not installed — run: pip install google-genai")
         return None
     except Exception as e:
-        print(f"Failed to load YOLO model: {e}")
+        print(f"Failed to initialize Gemini client: {e}")
         return None
+
+
+def _build_section_prompt(numbered_lines):
+    """Builds the zero-shot classification prompt. No examples/training data
+    needed — Gemini already knows what resumes look like; we're just telling
+    it exactly which labels we want and how to format the answer."""
+    labels_str = ", ".join(l for l in SECTION_LABELS if l != "O")
+    lines_block = "\n".join(f"{i}: {line}" for i, line in numbered_lines)
+
+    return f"""You are labeling each line of text extracted from a resume with the section it belongs to.
+
+Allowed labels: {labels_str}, O
+
+Use "O" for anything that isn't part of a real section — e.g. a stray page number, a decorative separator, or a leftover artifact from PDF text extraction.
+
+Rules:
+- "Header" is the candidate's name / professional title line at the very top of the resume, and nothing else.
+- "Contact" is email, phone, address, LinkedIn/portfolio/GitHub links.
+- A section heading line itself (e.g. the word "Education" on its own line) should get the same label as the content underneath it.
+- Every line must get exactly one label from the allowed list.
+- Preserve the original line index exactly as given.
+
+Resume lines (format is "index: text"):
+{lines_block}
+
+Return ONLY a JSON array, with no other text before or after it, in this exact form:
+[{{"index": 0, "label": "Header"}}, {{"index": 1, "label": "Contact"}}]
+
+One entry per input line, covering every index from 0 to {len(numbered_lines) - 1}.
+"""
+
+
+def _call_gemini_with_retries(client, prompt):
+    """Calls Gemini, retrying with exponential backoff if we hit a rate
+    limit (HTTP 429). This is about request pacing on the free tier, not
+    about the prompt being too long — a resume is far under any per-request
+    token cap."""
+    from google.genai import types
+
+    for attempt in range(GEMINI_MAX_RETRIES):
+        try:
+            response = client.models.generate_content(
+                model=GEMINI_MODEL,
+                contents=prompt,
+                config=types.GenerateContentConfig(response_mime_type="application/json"),
+            )
+            return response.text
+        except Exception as e:
+            msg = str(e).lower()
+            is_rate_limit = "429" in msg or "rate limit" in msg or "resource exhausted" in msg or "quota" in msg
+
+            if is_rate_limit and attempt < GEMINI_MAX_RETRIES - 1:
+                wait = GEMINI_BASE_BACKOFF_SECONDS * (2 ** attempt)
+                print(f"Gemini rate limit hit — waiting {wait}s before retry ({attempt + 1}/{GEMINI_MAX_RETRIES})")
+                time.sleep(wait)
+                continue
+
+            print(f"Gemini call failed: {e}")
+            return None
+    return None
+
+
+def _parse_gemini_labels(response_text, n_lines):
+    """Parses Gemini's JSON response into a label-per-line list. Any line
+    Gemini didn't confidently cover defaults to 'O' rather than crashing
+    the pipeline — a partial response is still useful."""
+    if not response_text:
+        return None
+
+    cleaned = response_text.strip()
+    if cleaned.startswith("```"):
+        cleaned = re.sub(r'^```(json)?', '', cleaned).rstrip('`').strip()
+
+    try:
+        data = json.loads(cleaned)
+    except Exception as e:
+        print(f"Failed to parse Gemini response as JSON: {e}")
+        return None
+
+    if not isinstance(data, list):
+        print("Gemini response was valid JSON but not a list — treating as failed.")
+        return None
+
+    labels = ["O"] * n_lines
+    for item in data:
+        if not isinstance(item, dict):
+            continue
+        idx = item.get("index")
+        label = item.get("label")
+        if not isinstance(idx, int) or label not in SECTION_LABELS:
+            continue
+        if 0 <= idx < n_lines:
+            labels[idx] = label
+
+    return labels
+
+
+def classify_lines_with_gemini(lines):
+    """
+    Sends resume lines to Gemini and asks it to zero-shot label each one
+    with the section it belongs to — no fine-tuning, no labeled training
+    set, no model file to manage. Reconstructs a clean document with
+    explicit section headers matching categorize.py's SECTION_HEADERS
+    keywords, same output shape the rest of the pipeline already expects.
+
+    Returns "" if Gemini isn't configured/available, the call fails after
+    retries, or nothing was confidently labeled — callers should treat that
+    as "try the next method".
+    """
+    if not lines:
+        return ""
+
+    client = _get_gemini_client()
+    if client is None:
+        return ""
+
+    numbered_lines = list(enumerate(lines))
+    prompt = _build_section_prompt(numbered_lines)
+
+    response_text = _call_gemini_with_retries(client, prompt)
+    labels = _parse_gemini_labels(response_text, len(lines))
+    if labels is None:
+        return ""
+
+    sections = {}
+    order = []
+    for line, label in zip(lines, labels):
+        if label == "O":
+            continue
+        if label not in sections:
+            sections[label] = []
+            order.append(label)
+        sections[label].append(line)
+
+    if not sections:
+        return ""
+
+    output_parts = []
+    if "Header" in sections:
+        output_parts.append("\n".join(sections["Header"]))
+
+    for label, header_label in LABEL_TO_HEADER.items():
+        if label == "Header" or label not in sections:
+            continue
+        output_parts.append(f"\n{header_label}\n" + "\n".join(sections[label]))
+
+    return "\n".join(output_parts).strip()
 
 
 # ─── COLUMN DETECTION HELPER ──────────────────────────────────────────────────
@@ -116,10 +295,11 @@ def _detect_column_split(words, page_width, min_gap=20):
     return None
 
 
-def _words_to_text(words):
-    """Reconstruct readable text from a list of word dicts, grouping by line (top)."""
+def _words_to_lines(words):
+    """Reconstruct a list of readable lines from pdfplumber word dicts,
+    grouping words by their vertical position (top)."""
     if not words:
-        return ""
+        return []
     words = sorted(words, key=lambda w: (round(w["top"], 1), w["x0"]))
     lines = []
     current_line = []
@@ -140,14 +320,22 @@ def _words_to_text(words):
         current_line.sort(key=lambda w: w["x0"])
         lines.append(" ".join(x["text"] for x in current_line))
 
-    return "\n".join(lines)
+    return lines
 
 
-# ─── pdfplumber extraction function (primary method, column-aware) ───────────
+def _words_to_text(words):
+    return "\n".join(_words_to_lines(words))
 
-def extract_with_pdfplumber(pdf_path):
-    """Primary extraction — column-aware, avoids row-bleed on two-column resumes."""
-    text = ""
+
+def _get_ordered_lines_from_pdf(pdf_path):
+    """
+    Column-aware line extraction: reads each page's words, splits into left/
+    right columns if a gutter is detected (so column text doesn't bleed
+    together), and returns one flat list of lines in natural reading order.
+    This is what gets sent to Gemini for section classification, and is also
+    reused as-is for the plain-text fallback (extract_with_pdfplumber).
+    """
+    all_lines = []
     try:
         with pdfplumber.open(pdf_path) as pdf:
             for page in pdf.pages:
@@ -158,18 +346,43 @@ def extract_with_pdfplumber(pdf_path):
                 split_x = _detect_column_split(words, page.width)
 
                 if split_x is None:
-                    # single column — reconstruct normally
-                    text += _words_to_text(words) + "\n"
+                    all_lines.extend(_words_to_lines(words))
                 else:
                     left = [w for w in words if w["x0"] < split_x]
                     right = [w for w in words if w["x0"] >= split_x]
-                    # read left column fully, then right column
-                    text += _words_to_text(left) + "\n"
-                    text += _words_to_text(right) + "\n"
+                    all_lines.extend(_words_to_lines(left))
+                    all_lines.extend(_words_to_lines(right))
     except Exception as e:
-        print(f"pdfplumber failed: {e}")
-        return ""
-    return text
+        print(f"pdfplumber failed while preparing lines: {e}")
+        return []
+
+    return [ln for ln in all_lines if ln.strip()]
+
+
+def extract_with_gemini_pdf(pdf_path):
+    """Entry point for PDFs: pulls column-aware lines via pdfplumber, then
+    has Gemini zero-shot classify each line into a resume section."""
+    lines = _get_ordered_lines_from_pdf(pdf_path)
+    return classify_lines_with_gemini(lines)
+
+
+def extract_with_gemini_image(image_path, lang='eng'):
+    """Entry point for image uploads (jpg/png): OCRs the image first (no
+    layout awareness needed at this stage — Gemini figures out the
+    sections from the text and reading order alone), then classifies."""
+    raw_text = extract_with_image_ocr(image_path, lang=lang)
+    lines = [ln.strip() for ln in raw_text.splitlines() if ln.strip()]
+    return classify_lines_with_gemini(lines)
+
+
+# ─── pdfplumber extraction function (fallback method, column-aware) ──────────
+
+def extract_with_pdfplumber(pdf_path):
+    """Column-aware plain-text extraction. Used as a fallback if Gemini
+    isn't available/confident, and shares the same line-extraction logic
+    that feeds Gemini above."""
+    lines = _get_ordered_lines_from_pdf(pdf_path)
+    return "\n".join(lines)
 
 
 # ─── PyMuPDF extraction function (fallback option, column-aware) ─────────────
@@ -204,8 +417,9 @@ def extract_with_pymupdf(pdf_path):
 # ─── PDF OCR extraction (for scanned/image-only PDFs) ────────────────────────
 
 def extract_with_ocr(pdf_path, lang='eng', dpi=300):
-    """Renders each PDF page to an image and OCRs it. Used when both
-    pdfplumber and PyMuPDF fail to find a text layer (scanned resumes)."""
+    """Renders each PDF page to an image and OCRs it. Used when the page has
+    no extractable text layer for pdfplumber/Gemini to work with at all
+    (scanned resumes)."""
     text = ""
     try:
         doc = fitz.open(pdf_path)
@@ -220,108 +434,6 @@ def extract_with_ocr(pdf_path, lang='eng', dpi=300):
         print(f"PDF OCR failed: {e}")
         return ""
     return text
-
-
-def _pdf_first_page_to_image(pdf_path, dpi=200):
-    """
-    Renders just the first page of a PDF to a temporary image file.
-    Used to feed YOLO (which operates on images, not PDFs directly).
-    """
-    try:
-        doc = fitz.open(pdf_path)
-        page = doc[0]
-        zoom = dpi / 72
-        matrix = fitz.Matrix(zoom, zoom)
-        pix = page.get_pixmap(matrix=matrix)
-
-        temp_path = os.path.join(
-            os.path.dirname(os.path.abspath(pdf_path)) or ".",
-            "_yolo_temp_page.png"
-        )
-        pix.save(temp_path)
-        doc.close()
-        return temp_path
-    except Exception as e:
-        print(f"Failed to render PDF page to image for YOLO: {e}")
-        return None
-
-
-# ─── YOLO LAYOUT-AWARE EXTRACTION (new) ───────────────────────────────────────
-
-def extract_with_yolo_layout(image_path, lang='eng', conf_threshold=0.25):
-    """
-    Uses the trained YOLO model (see ml_service/vision/train_yolo.py) to detect
-    resume section regions directly on the image, crops each region, OCRs it
-    individually, then reconstructs a clean document with explicit section
-    headers matching categorize.py's SECTION_HEADERS keywords.
-
-    This sidesteps the column-bleed problem entirely — instead of guessing
-    column gutters from text positions, YOLO has actually learned what a
-    "skills box" or "education box" looks like visually.
-
-    Returns "" if YOLO isn't available, the model isn't found, or nothing
-    was detected — callers should treat that as "try the next method".
-    """
-    model = _get_yolo_model()
-    if model is None:
-        return ""
-
-    try:
-        results = model(image_path, conf=conf_threshold, verbose=False)
-    except Exception as e:
-        print(f"YOLO inference failed: {e}")
-        return ""
-
-    if not results or len(results[0].boxes) == 0:
-        return ""
-
-    try:
-        img = Image.open(image_path).convert("RGB")
-    except Exception as e:
-        print(f"Failed to open image for cropping: {e}")
-        return ""
-
-    sections_text = {}
-    pad = 5  # small padding so OCR doesn't clip characters right at the box edge
-
-    for box in results[0].boxes:
-        class_id = int(box.cls)
-        class_name = model.names[class_id]
-        x1, y1, x2, y2 = box.xyxy[0].tolist()
-
-        x1 = max(0, x1 - pad)
-        y1 = max(0, y1 - pad)
-        x2 = min(img.width, x2 + pad)
-        y2 = min(img.height, y2 + pad)
-
-        cropped = img.crop((x1, y1, x2, y2))
-        crop_text = pytesseract.image_to_string(cropped, lang=lang).strip()
-
-        if not crop_text:
-            continue
-
-        # if a class appears more than once (e.g. multiple experience boxes),
-        # append rather than overwrite
-        existing = sections_text.get(class_name, "")
-        sections_text[class_name] = (existing + "\n" + crop_text).strip() if existing else crop_text
-
-    if not sections_text:
-        return ""
-
-    # Reconstruct into a document with clean, single-line headers so
-    # categorize.py's detect_sections_spacy() finds them at high confidence,
-    # regardless of how the original layout was visually arranged.
-    output_parts = []
-
-    if "header" in sections_text:
-        output_parts.append(sections_text["header"])
-
-    for class_name, header_label in YOLO_CLASS_TO_HEADER.items():
-        if class_name == "header" or class_name not in sections_text:
-            continue
-        output_parts.append(f"\n{header_label}\n{sections_text[class_name]}")
-
-    return "\n".join(output_parts).strip()
 
 
 # ─── OCR extraction method (for scanned images: jpg/png) ─────────────────────
@@ -393,7 +505,7 @@ def _is_weak(text, report, min_length=300):
         return True
     # A real resume extraction should have email, phone, AND section headers.
     # Missing any one of these is a strong signal of a partial/garbled
-    # extraction (e.g. YOLO cropping out the contact-info region, or OCR
+    # extraction (e.g. Gemini mislabeling the contact-info lines, or OCR
     # mangling a header) — so escalate to the next method if any is missing.
     if not report["has_email"] or not report["has_phone"] or not report["has_sections"]:
         return True
@@ -412,24 +524,18 @@ def extract_resume_text(file_path, lang='eng'):
         method = "docx"
 
     elif ext == ".pdf":
-        # Try YOLO layout detection first (on the rendered first page) —
-        # if it's confident, this avoids column-bleed entirely.
-        if USE_YOLO:
-            temp_image_path = _pdf_first_page_to_image(file_path)
-            if temp_image_path:
-                yolo_text = extract_with_yolo_layout(temp_image_path, lang=lang)
-                try:
-                    os.remove(temp_image_path)
-                except OSError:
-                    pass
+        # Try Gemini zero-shot section classification first — if it's
+        # confident, this avoids column-bleed entirely and needs no
+        # training data or model file.
+        if USE_GEMINI:
+            gemini_text = extract_with_gemini_pdf(file_path)
+            if gemini_text.strip():
+                gemini_report = quality_check(clean_text(gemini_text))
+                if not _is_weak(gemini_text, gemini_report):
+                    text, method, report = gemini_text, "gemini", gemini_report
 
-                if yolo_text.strip():
-                    yolo_report = quality_check(clean_text(yolo_text))
-                    if not _is_weak(yolo_text, yolo_report):
-                        text, method, report = yolo_text, "yolo_layout", yolo_report
-
-        # Fall back to the original text-extraction chain if YOLO
-        # wasn't available, wasn't confident, or found nothing usable.
+        # Fall back to the original text-extraction chain if Gemini wasn't
+        # available, wasn't confident, or found nothing usable.
         if not text.strip():
             text = extract_with_pdfplumber(file_path)
             method = "pdfplumber"
@@ -447,15 +553,15 @@ def extract_resume_text(file_path, lang='eng'):
                     text, method = text3, "ocr"
 
     elif ext in [".jpg", ".jpeg", ".png", ".webp"]:
-        # Try YOLO layout detection first for image uploads too.
-        if USE_YOLO:
-            yolo_text = extract_with_yolo_layout(file_path, lang=lang)
-            if yolo_text.strip():
-                yolo_report = quality_check(clean_text(yolo_text))
-                if not _is_weak(yolo_text, yolo_report):
-                    text, method, report = yolo_text, "yolo_layout", yolo_report
+        # Try Gemini (OCR + zero-shot classification) first for image uploads too.
+        if USE_GEMINI:
+            gemini_text = extract_with_gemini_image(file_path, lang=lang)
+            if gemini_text.strip():
+                gemini_report = quality_check(clean_text(gemini_text))
+                if not _is_weak(gemini_text, gemini_report):
+                    text, method, report = gemini_text, "gemini", gemini_report
 
-        # Fall back to plain (layout-unaware) OCR if YOLO didn't help.
+        # Fall back to plain (layout-unaware) OCR if Gemini didn't help.
         if not text.strip():
             text = extract_with_image_ocr(file_path, lang=lang)
             method = "image_ocr"
