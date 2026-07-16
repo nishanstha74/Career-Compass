@@ -517,6 +517,7 @@ def extract_resume_text(file_path, lang='eng'):
     ext = os.path.splitext(file_path)[1].lower()
     text = ""
     method = None
+    base_method = None      #actual text extractor
     report = None
 
     if ext == ".docx":
@@ -532,7 +533,11 @@ def extract_resume_text(file_path, lang='eng'):
             if gemini_text.strip():
                 gemini_report = quality_check(clean_text(gemini_text))
                 if not _is_weak(gemini_text, gemini_report):
-                    text, method, report = gemini_text, "gemini", gemini_report
+                    #text, method, report = gemini_text, "gemini", gemini_report
+                    text = gemini_text
+                    base_method = "pdfplumber"
+                    method = f"{base_method} + Gemini (section separation)"
+                    report = gemini_report
 
         # Fall back to the original text-extraction chain if Gemini wasn't
         # available, wasn't confident, or found nothing usable.
@@ -559,7 +564,10 @@ def extract_resume_text(file_path, lang='eng'):
             if gemini_text.strip():
                 gemini_report = quality_check(clean_text(gemini_text))
                 if not _is_weak(gemini_text, gemini_report):
-                    text, method, report = gemini_text, "gemini", gemini_report
+                    text = gemini_text
+                    base_method = "OCR"
+                    method = f"{base_method} + Gemini (section separation)"
+                    report = gemini_report
 
         # Fall back to plain (layout-unaware) OCR if Gemini didn't help.
         if not text.strip():

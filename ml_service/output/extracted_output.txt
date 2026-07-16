@@ -29,6 +29,16 @@ Backend Intern (Go)
 - Implemented a Support Chat System from scratch.
 - Worked with REST APIs, gRPC, PostgreSQL, and Docker.
 - Participated in Agile software development practices.
+Leadership
+IEEE NCIT Chair Jan 2026 – Present
+- Leading student branch activities, technical events, and member engagement initiatives.
+IEEE NCIT Treasurer Dec 2024 – Jan 2026
+- Contributed to managing financial activities, organizing workshops, competitions, and branch activi-
+ties.
+Achievements
+- GPA 4.0 maintained for five consecutive semesters.
+- Scholarship recipient at Pokhara University Engineering Program.
+- Best Academic Award (2023) in +2.
 
 Skills
 Technical Skills
