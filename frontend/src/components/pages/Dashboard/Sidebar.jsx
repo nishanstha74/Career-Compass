@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import appLogo from "../../../assets/Career Compass Logo.png";
 import ProfileView from "./views/ProfileView";
+import FeedbackModal from "../../modals/FeedbackModal";
 import {
   Sparkles,
   ArrowLeft,
@@ -35,6 +36,7 @@ export default function Sidebar({
   handleSignOut,
   navItems,
 }) {
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   return (
     <aside
       className={`relative overflow-hidden h-full shrink-0 transition-all duration-300 ease-in-out ${
@@ -170,7 +172,11 @@ export default function Sidebar({
         profileBio={profileBio}
         setProfileBio={setProfileBio}
         handleSignOut={handleSignOut}
+        setFeedbackOpen={setFeedbackOpen}
       />
+
+      {/* ── Modals ── */}
+      <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
     </aside>
   );
 }

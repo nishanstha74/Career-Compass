@@ -26,6 +26,7 @@ export default function ProfileView({
   profileBio,
   setProfileBio,
   handleSignOut,
+  setFeedbackOpen,
 }) {
   return (
     <div
@@ -60,7 +61,7 @@ export default function ProfileView({
         </button>
       </div>
 
-      <div className="flex-1 px-4 py-6 space-y-5">
+      <div className="flex-1 px-4 py-6 space-y-5 overflow-y-auto scrollbar-none">
         {/* Avatar Section */}
         <div className="flex flex-col items-center">
           <div className="relative">
@@ -123,14 +124,28 @@ export default function ProfileView({
         {/* Menu Card */}
         <div className="bg-white rounded-2xl shadow-sm divide-y divide-slate-100 overflow-hidden">
           {[
-            { label: "Personal Info", icon: User },
-            { label: "Account Privacy", icon: Shield },
-            { label: "Preferences", icon: Globe },
-            { label: "Feedback", icon: MessageSquare },
-            { label: "Help & Support", icon: HelpCircle },
-          ].map(({ label, icon: Icon }) => (
+            { label: "Personal Info", icon: User, onClick: () => {} },
+            { label: "Account Privacy", icon: Shield, onClick: () => {} },
+            { label: "Preferences", icon: Globe, onClick: () => {} },
+            {
+              label: "Feedback",
+              icon: MessageSquare,
+              onClick: () => setFeedbackOpen(true),
+            },
+            {
+              label: "Help & Support",
+              icon: HelpCircle,
+              onClick: () =>
+                window.open(
+                  "https://mail.google.com/mail/?view=cm&fs=1&to=careercompass.dev26@gmail.com&su=CareerCompass%20Inquiry",
+                  "_blank",
+                  "noopener,noreferrer",
+                ),
+            },
+          ].map(({ label, icon: Icon, onClick }) => (
             <button
               key={label}
+              onClick={onClick}
               className="w-full flex items-center gap-3 px-4 py-3.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
             >
               <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center shrink-0">
