@@ -213,10 +213,9 @@ export default function SignUp() {
   };
 
   return (
-    <div className="bg-slate-700 flex min-h-screen items-center justify-center p-4 font-sans selection:bg-blue-200">
+    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex min-h-screen items-center justify-center p-4 font-sans selection:bg-blue-200">
       <div
-        className="relative flex w-full max-w-5xl flex-col items-center justify-center overflow-hidden rounded-3xl border border-gray-200 bg-[#f4f7fa] px-6 shadow-2xl"
-        style={{ minHeight: "800px" }}
+        className="relative flex w-full max-w-md flex-col items-center justify-center"
       >
         <div className="w-full max-w-md space-y-6 rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
           {/* 👇 TOGGLE INTERFACES CONDITIONALLY HERE */}

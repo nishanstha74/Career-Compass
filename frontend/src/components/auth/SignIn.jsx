@@ -216,10 +216,9 @@ export default function SignIn() {
   };
 
   return (
-    <div className="bg-slate-700 flex items-center justify-center min-h-screen p-4 font-sans selection:bg-blue-200">
+    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center min-h-screen p-4 font-sans selection:bg-blue-200">
       <div
-        className="w-full max-w-5xl bg-[#f4f7fa] rounded-3xl shadow-2xl border border-gray-200 flex flex-col justify-center items-center overflow-hidden relative px-6"
-        style={{ minHeight: "800px" }}
+        className="w-full max-w-md flex flex-col justify-center items-center"
       >
         <div className="w-full max-w-md bg-white rounded-2xl p-8 shadow-sm border border-gray-100 space-y-6">
           {mode === "signin" && (
