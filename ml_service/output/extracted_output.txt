@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 OLIVIA WILSON
 
 MARKETING MANAGER
@@ -45,3 +46,67 @@ WA 25% Increcie IN Seas GeNeTARON,
 + Geemarc Qavics + Colebontod wit) siins toss 0 create ottectve ssies collateral
 
 © Spanite ieterreciate STERERmON, aot promotional materees.
+=======
+Rajan Raj Acharya
+
+Contact
+(cid:131) +977 9829113768 | # rajan.raj@ieee.org | § GitHub | (cid:239) LinkedIn | + Lalitpur, Nepal
+
+Summary
+Professional Summary
+JuniorBackendEngineerwithprofessionalexperiencedevelopingbackendservicesusingGo. Experienced
+in REST APIs, gRPC, PostgreSQL, Docker, and scalable backend architecture. Worked as a Backend
+Intern and Part-Time Backend Engineer at Astergaze Technologies. Strong academic background with
+a GPA of 4.0 maintained across five consecutive semesters.
+
+Education
+Education
+Nepal College of Information Technology (NCIT)
+Bachelor of Engineering in Software Engineering Ongoing
+- GPA 4.0 maintained in five consecutive semesters.
+
+Experience
+Experience
+Astergaze Technologies Nov 2025 – Apr 2026
+Part-Time Backend Engineer
+- Developed and maintained backend services using Go.
+- Designed APIs and contributed to database-related development tasks.
+- Worked closely with engineering teams in feature implementation and maintenance.
+Astergaze Technologies May 2025 – Oct 2025
+Backend Intern (Go)
+- Built backend services and APIs using Go.
+- Implemented a Support Chat System from scratch.
+- Worked with REST APIs, gRPC, PostgreSQL, and Docker.
+- Participated in Agile software development practices.
+Leadership
+IEEE NCIT Chair Jan 2026 – Present
+- Leading student branch activities, technical events, and member engagement initiatives.
+IEEE NCIT Treasurer Dec 2024 – Jan 2026
+- Contributed to managing financial activities, organizing workshops, competitions, and branch activi-
+ties.
+Achievements
+- GPA 4.0 maintained for five consecutive semesters.
+- Scholarship recipient at Pokhara University Engineering Program.
+- Best Academic Award (2023) in +2.
+
+Skills
+Technical Skills
+Languages: Go, JavaScript, SQL
+Backend: REST APIs, gRPC, Gin, GORM, Uber Fx
+Databases: PostgreSQL, MongoDB
+Tools: Docker, Git, GitHub, Linux
+Concepts: API Design, Database Design, Dependency Injection
+
+Projects
+Projects
+Blog gRPC Service (Go, gRPC, PostgreSQL)
+- Developed a blog backend service using Go, gRPC, PostgreSQL, and GORM.
+- Implemented CRUD operations, service layers, and database integration.
+- Applied dependency injection using Uber Fx and modular architecture principles.
+Support Chat System
+- Designed and implemented a backend support chat module during internship.
+- Developed APIs, messaging workflows, and database schema design.
+Colorectal Polyp Segmentation using U-Net
+- Developed an automated image segmentation system using the U-Net architecture.
+- Achieved Dice Score of 0.8048 and IoU of 0.7198 on the Kvasir-SEG dataset.
+>>>>>>> ml-service
