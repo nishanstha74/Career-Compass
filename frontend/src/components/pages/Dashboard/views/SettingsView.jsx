@@ -111,13 +111,13 @@ export default function SettingsView({
           </div>
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className={`w-11 h-6 rounded-full relative transition-colors shrink-0 ${
+            className={`w-11 h-6 rounded-full relative transition-colors shrink-0 focus:outline-none ${
               darkMode ? "bg-blue-600" : "bg-slate-200"
             }`}
           >
             <span
-              className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-transform ${
-                darkMode ? "translate-x-5" : "translate-x-0.5"
+              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200 ease-in-out ${
+                darkMode ? "translate-x-5" : "translate-x-0"
               }`}
             />
           </button>
