@@ -271,10 +271,18 @@ export default function Dashboard() {
           }`}
         >
           <div>
-            <h1 className="text-xl font-bold text-slate-900">
+            <h1
+              className={`text-xl font-bold transition-colors duration-200 ${
+                darkMode ? "text-white" : "text-slate-900"
+              }`}
+            >
               Welcome back, {user.firstName}
             </h1>
-            <p className="text-xs font-mono text-slate-400 mt-0.5">
+            <p
+              className={`text-xs font-mono mt-0.5 transition-colors duration-200 ${
+                darkMode ? "text-slate-400" : "text-slate-400"
+              }`}
+            >
               {currentDate}
             </p>
           </div>
