@@ -112,7 +112,12 @@ export default function SignIn() {
       const data = await response.json();
 
       if (data.success) {
-        // 🔐 Store session variables in local storage
+        // 🔐 Remember Me logic
+        if (rememberMe) {
+          localStorage.setItem("cc_remembered_email", email);
+        } else {
+          localStorage.removeItem("cc_remembered_email");
+        }
         localStorage.setItem("userName", data.fullName);
         localStorage.setItem("userEmail", data.email);
         console.log("Login successful!");
@@ -140,14 +145,20 @@ export default function SignIn() {
 
     setResetLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      setResetSuccess(
-        "Password reset link would be sent in a real backend setup.",
-      );
-      setMode("forgot-verify");
+      const response = await fetch("http://localhost:5000/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: resetEmail }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setMode("forgot-verify");
+      } else {
+        setResetError(data.message || "Couldn't send reset code. Try again.");
+      }
     } catch (err) {
       console.error("Reset code error:", err);
-      setResetError("Couldn't send reset code. Try again.");
+      setResetError("Network error. Is the server running?");
     } finally {
       setResetLoading(false);
     }
@@ -164,11 +175,20 @@ export default function SignIn() {
 
     setResetLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      setMode("forgot-reset");
+      const response = await fetch("http://localhost:5000/api/auth/verify-reset-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: resetEmail, otp: code }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setMode("forgot-reset");
+      } else {
+        setResetError(data.message || "Invalid or expired code.");
+      }
     } catch (err) {
       console.error("Verify code error:", err);
-      setResetError("Invalid or expired code.");
+      setResetError("Network error. Is the server running?");
     } finally {
       setResetLoading(false);
     }
@@ -189,12 +209,21 @@ export default function SignIn() {
 
     setResetLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      setResetSuccess("Password updated! Redirecting...");
-      setTimeout(() => navigate("/dashboard"), 1200);
+      const response = await fetch("http://localhost:5000/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: resetEmail, otp: code, newPassword }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setResetSuccess("Password updated! Redirecting to sign in...");
+        setTimeout(() => backToSignIn(), 1500);
+      } else {
+        setResetError(data.message || "Couldn't reset password. Try again.");
+      }
     } catch (err) {
       console.error("Reset password error:", err);
-      setResetError("Couldn't reset password. Try again.");
+      setResetError("Network error. Is the server running?");
     } finally {
       setResetLoading(false);
     }

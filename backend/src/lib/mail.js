@@ -41,3 +41,36 @@ export const sendVerificationEmail = async (email, otp) => {
     throw error;
   }
 };
+
+export const sendPasswordResetEmail = async (email, otp) => {
+  try {
+    await transporter.sendMail({
+      from: `"Career Compass" <${process.env.EMAIL}>`,
+      to: email,
+      subject: "Reset Your Career Compass Password",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+          <h2>Password Reset Request</h2>
+          <p>Hello,</p>
+          <p>We received a request to reset your <strong>Career Compass</strong> password.</p>
+          <p>Your password reset OTP is:</p>
+
+          <h1 style="letter-spacing: 5px; color: #2563eb;">
+            ${otp}
+          </h1>
+
+          <p>This OTP is valid for <strong>10 minutes</strong>.</p>
+          <p>If you did not request a password reset, please ignore this email. Your password will remain unchanged.</p>
+
+          <hr />
+          <small>Career Compass Team</small>
+        </div>
+      `,
+    });
+
+    console.log(`✅ Password reset email sent to ${email}`);
+  } catch (error) {
+    console.error("❌ Error sending password reset email:", error);
+    throw error;
+  }
+};

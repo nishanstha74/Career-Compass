@@ -6,6 +6,9 @@ import {
   checkAuth,
   verifyEmail,
   updateProfilePhoto,
+  forgotPassword,
+  verifyResetOtp,
+  resetPassword,
 } from "../controllers/auth.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 
@@ -28,5 +31,14 @@ router.get("/check", protectRoute, checkAuth);
 
 // 6. UPDATE PROFILE PHOTO
 router.post("/profile-photo", protectRoute, updateProfilePhoto);
+
+// 7. FORGOT PASSWORD - Send OTP
+router.post("/forgot-password", forgotPassword);
+
+// 8. FORGOT PASSWORD - Verify OTP
+router.post("/verify-reset-otp", verifyResetOtp);
+
+// 9. FORGOT PASSWORD - Reset password
+router.post("/reset-password", resetPassword);
 
 export default router;

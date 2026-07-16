@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import generateJwtToken from "../lib/utils.js";
-import { sendVerificationEmail } from "../lib/mail.js";
+import { sendVerificationEmail, sendPasswordResetEmail } from "../lib/mail.js";
 
 export const register = async (req, res) => {
   try {
@@ -260,6 +260,106 @@ export const updateProfilePhoto = async (req, res) => {
     });
   } catch (error) {
     console.log("Error in updateProfilePhoto:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+// FORGOT PASSWORD - Step 1: Send OTP to email
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ success: false, message: "Email is required" });
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      // Security: Don't reveal whether email exists
+      return res.status(200).json({ success: true, message: "If that email is registered, you will receive an OTP." });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.resetPasswordOtp = otp;
+    user.resetPasswordOtpExpiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+    await user.save();
+
+    await sendPasswordResetEmail(email, otp);
+    console.log(`✅ Password reset OTP sent to: ${email}`);
+
+    res.status(200).json({ success: true, message: "OTP sent to your email." });
+  } catch (error) {
+    console.error("Error in forgotPassword:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+// FORGOT PASSWORD - Step 2: Verify OTP
+export const verifyResetOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) return res.status(400).json({ success: false, message: "Email and OTP are required" });
+
+    const user = await User.findOne({ email });
+    if (!user || !user.resetPasswordOtp) {
+      return res.status(400).json({ success: false, message: "Invalid or expired OTP." });
+    }
+
+    if (user.resetPasswordOtp !== String(otp).trim()) {
+      return res.status(400).json({ success: false, message: "Incorrect OTP. Please try again." });
+    }
+
+    if (Date.now() > user.resetPasswordOtpExpiresAt) {
+      return res.status(400).json({ success: false, message: "OTP has expired. Please request a new one." });
+    }
+
+    res.status(200).json({ success: true, message: "OTP verified successfully." });
+  } catch (error) {
+    console.error("Error in verifyResetOtp:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+// FORGOT PASSWORD - Step 3: Set new password
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ success: false, message: "All fields are required" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user || !user.resetPasswordOtp) {
+      return res.status(400).json({ success: false, message: "Invalid or expired OTP." });
+    }
+
+    if (user.resetPasswordOtp !== String(otp).trim()) {
+      return res.status(400).json({ success: false, message: "Incorrect OTP." });
+    }
+
+    if (Date.now() > user.resetPasswordOtpExpiresAt) {
+      return res.status(400).json({ success: false, message: "OTP has expired. Please request a new one." });
+    }
+
+    // Validate new password strength
+    if (
+      newPassword.length < 8 ||
+      !/[A-Z]/.test(newPassword) ||
+      !/[0-9]/.test(newPassword) ||
+      !/[@$!%*?&]/.test(newPassword)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be 8+ characters with an uppercase letter, a number, and a special character.",
+      });
+    }
+
+    user.password = newPassword; // pre-save hook will hash it
+    user.resetPasswordOtp = "";
+    user.resetPasswordOtpExpiresAt = undefined;
+    await user.save();
+
+    console.log(`✅ Password reset successfully for: ${email}`);
+    res.status(200).json({ success: true, message: "Password updated successfully. You can now sign in." });
+  } catch (error) {
+    console.error("Error in resetPassword:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
