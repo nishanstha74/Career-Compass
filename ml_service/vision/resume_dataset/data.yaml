@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 8
+names: ['contact', 'education', 'experience', 'header', 'languages', 'projects', 'skills', 'summary']
+
+roboflow:
+  workspace: haris-workspace-0ndy3
+  project: resume-section
+  version: 4
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/haris-workspace-0ndy3/resume-section/dataset/4
