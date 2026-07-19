@@ -11,118 +11,17 @@ import SkillGaps from "./views/SkillGaps";
 import RoadmapView from "./views/RoadmapView";
 import SettingsView from "./views/SettingsView";
 
-// MOCK DATA
-const MOCK_RESULT = {
-  parsedResume: {
-    name: "Nishan Shrestha",
-    email: "nishanshresths45@gmail.com",
-    skills: ["React", "Node.js", "JavaScript", "MongoDB", "CSS", "Git"],
-    education: "BESE – Pokhara University",
-    experience: "1 year – Frontend Developer Intern",
-  },
-  atsScore: 78,
-  atsBreakdown: [
-    { label: "Strong keyword alignment", type: "success" },
-    { label: "Missing: System Design experience", type: "warning" },
-    { label: "Add quantified achievements", type: "info" },
-  ],
-  skillMatchHeatmap: [
-    { skill: "React", present: true },
-    { skill: "TypeScript", present: false },
-    { skill: "Node.js", present: true },
-    { skill: "GraphQL", present: false },
-    { skill: "Docker", present: false },
-    { skill: "JavaScript", present: true },
-    { skill: "Testing Library", present: false },
-    { skill: "AWS", present: false },
-  ],
-  careerPredictions: [
-    { role: "Frontend Engineer", confidence: 91, color: "bg-indigo-600" },
-    { role: "Full-Stack Developer", confidence: 84, color: "bg-indigo-500" },
-    { role: "Backend Engineer", confidence: 71, color: "bg-indigo-400" },
-    { role: "Data Engineer", confidence: 58, color: "bg-indigo-300" },
-    { role: "DevOps / Cloud", confidence: 43, color: "bg-indigo-200" },
-  ],
-  skillGaps: [
-    { skill: "TypeScript", gap: 80, category: "Frontend" },
-    { skill: "React Testing", gap: 65, category: "Frontend" },
-    { skill: "GraphQL", gap: 70, category: "Backend" },
-    { skill: "Kubernetes", gap: 55, category: "Backend" },
-    { skill: "AWS", gap: 60, category: "Cloud" },
-    { skill: "Docker", gap: 50, category: "DevOps" },
-    { skill: "System Design", gap: 75, category: "General" },
-  ],
-  roadmap: [
-    {
-      phase: "Phase 1",
-      title: "TypeScript Mastery",
-      description:
-        "Complete TypeScript fundamentals and advanced types to strengthen frontend development.",
-      resources: [
-        {
-          label: "Coursera – TypeScript Course",
-          url: "https://www.coursera.org/learn/typescript",
-        },
-        {
-          label: "Official TS Docs",
-          url: "https://www.typescriptlang.org/docs/",
-        },
-      ],
-      status: "pending",
-    },
-    {
-      phase: "Phase 2",
-      title: "React Testing Library",
-      description:
-        "Learn unit and integration testing with Jest and React Testing Library.",
-      resources: [
-        {
-          label: "Udemy – React Testing",
-          url: "https://www.udemy.com/topic/react-testing-library/",
-        },
-        {
-          label: "GitHub – RTL Examples",
-          url: "https://github.com/testing-library/react-testing-library",
-        },
-      ],
-      status: "pending",
-    },
-    {
-      phase: "Phase 3",
-      title: "GraphQL & API Design",
-      description:
-        "Build and consume GraphQL APIs. Understand resolvers, mutations, and subscriptions.",
-      resources: [
-        { label: "GraphQL Official Docs", url: "https://graphql.org/learn/" },
-        {
-          label: "Udemy – GraphQL Bootcamp",
-          url: "https://www.udemy.com/course/graphql-bootcamp/",
-        },
-      ],
-      status: "locked",
-    },
-    {
-      phase: "Phase 4",
-      title: "Docker & Kubernetes",
-      description:
-        "Containerise applications with Docker and orchestrate them with Kubernetes.",
-      resources: [
-        { label: "Docker Docs", url: "https://docs.docker.com/get-started/" },
-        {
-          label: "Coursera – K8s Basics",
-          url: "https://www.coursera.org/learn/google-kubernetes-engine",
-        },
-      ],
-      status: "locked",
-    },
-  ],
-};
+
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user: authUser, checkAuth } = useAuth();
 
   const [targetRole, setTargetRole] = useState("");
+  const [resumeText, setResumeText] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
+  const [resumeSkills, setResumeSkills] = useState("");
+  const [jobSkills, setJobSkills] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -233,8 +132,8 @@ export default function Dashboard() {
     toast.loading("Parsing resume…", { id: "parse" });
 
     try {
-      await new Promise((r) => setTimeout(r, 1800));
-      setParsedResume(MOCK_RESULT.parsedResume);
+      // Removed mock parsing. Real parsing will be handled after analysis.
+      setParsedResume(null);
       toast.success("Resume parsed successfully!", { id: "parse" });
     } catch {
       toast.error("Failed to parse resume. Try again.", { id: "parse" });
@@ -244,20 +143,35 @@ export default function Dashboard() {
   };
 
   const handleAnalyzeRole = async () => {
-    if (!targetRole.trim() || !uploadedFile) return;
+    if (!uploadedFile) {
+      toast.error('Please upload a resume before analysis');
+      return;
+    }
     setIsAnalyzing(true);
-    toast.loading("Running AI analysis…", { id: "analyze" });
+    toast.loading('Running AI analysis…', { id: 'analyze' });
 
     try {
-      await new Promise((r) => setTimeout(r, 1500));
-      setAnalysisResult(MOCK_RESULT);
-      toast.success("Analysis complete!", { id: "analyze" });
-    } catch {
-      toast.error("Analysis failed. Please try again.", { id: "analyze" });
+      // Build FormData for file upload
+      const formData = new FormData();
+      formData.append('file', uploadedFile);
+
+      const response = await fetch('http://localhost:8000/api/ml/predict', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+      setAnalysisResult(data);
+      setParsedResume(data.parsedResume);
+    } catch (err) {
+      console.error(err);
+      toast.error('Analysis failed. Please try again.', { id: 'analyze' });
     } finally {
       setIsAnalyzing(false);
     }
   };
+
+
 
   const handleDownloadGaps = () => {
     if (!analysisResult) return;
@@ -290,6 +204,7 @@ export default function Dashboard() {
         darkMode ? "bg-slate-950 text-slate-100" : "bg-slate-100 text-slate-800"
       }`}
     >
+      {/* ATS Analysis removed – pending */}
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
 
       <Sidebar
@@ -318,6 +233,7 @@ export default function Dashboard() {
               : "bg-white border-slate-200/60"
           }`}
         >
+          {/* Skill Match Heatmap removed – pending */}
           <div>
             <h1
               className={`text-xl font-bold transition-colors duration-200 ${
@@ -345,6 +261,7 @@ export default function Dashboard() {
         </header>
 
         <div className="flex-1 overflow-y-auto p-8 space-y-6">
+          {/* Metric cards removed – pending features */}
           {activeSection === "dashboard" && (
             <MainOverview
               targetRole={targetRole}
