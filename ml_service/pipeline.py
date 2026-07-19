@@ -26,9 +26,9 @@ from pdf_extract import extract_resume_text
 from NLP.categorize import categorize_resume
 from ML_train.predict import rank_jobs_from_categorized  # ASSUMED signature
 
-# pdf_extract.py's own __main__ block does `from pipeline import RESUME_PATH`
+# pdf_extract.py's own __main__ block does `from pipeline import DEFAULT_RESUME_PATH`
 # when run standalone — kept here for that compatibility only.
-RESUME_PATH = "mock/CV1.pdf"
+DEFAULT_RESUME_PATH = "mock/CV1.pdf"
 
 TOP_K = 5
 
@@ -60,29 +60,52 @@ def run_pipeline(resume_path: str, top_k: int = 5):
         top_n=top_k
     )
 
+    # Build a simplified parsed resume structure for the front‑end
+    parsed_resume = {
+        "name": categorized.get("name", ""),
+        "email": categorized.get("contact", {}).get("email", ""),
+        "education": categorized.get("education", ""),
+        "experience": categorized.get("experience", ""),
+        "skills": categorized.get("skills", []),
+    }
+
+    # Transform the ranked jobs into the shape the UI expects (role + confidence %)
+    career_predictions = []
+    for job in final_ranked:
+        # Each job dict from rank_jobs_from_categorized likely contains
+        # "job_position_name" and "matched_score" (0‑1 float)
+        role = job.get("job_position_name") or job.get("role") or ""
+        confidence = int(round(job.get("matched_score", 0) * 100))
+        career_predictions.append({"role": role, "confidence": confidence})
+
     return {
         "extraction_method": method,
         "categorization_method": categorized["_meta"]["method"],
-        "final_ranked_jobs": final_ranked
+        "parsedResume": parsed_resume,
+        "careerPredictions": career_predictions,
+        "final_ranked_jobs": final_ranked,
     }
 
 
-def main():
 
-    result = run_pipeline(
-        RESUME_PATH,
-        top_k=TOP_K
-    )
 
-    print("\n========== TOP JOB MATCHES ==========\n")
-
-    # print(json.dumps(result["final_ranked_jobs"], indent=4))
-    for i, job in enumerate(result["final_ranked_jobs"], start=1):
-        print(f"--- Job {i} ---")
-        for key, value in job.items():
-            print(f"  {key}: {value}")
-        print()
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser(description="Run the resume-to-job pipeline")
+    parser.add_argument(
+        "resume_path",
+        nargs="?",
+        default=DEFAULT_RESUME_PATH,
+        help="Path to the resume file (PDF/DOCX)."
+    )
+    args = parser.parse_args()
+    # Run pipeline with provided or default path
+    result = run_pipeline(args.resume_path, top_k=TOP_K)
+    print("\n========== TOP JOB MATCHES ==========\n")
+    for i, job in enumerate(result["final_ranked_jobs"], start=1):
+        print(f"--- Job {i} ---")
+        for k, v in job.items():
+            print(f"  {k}: {v}")
+        print()
