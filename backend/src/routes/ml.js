@@ -15,6 +15,9 @@ const upload = multer({
       "application/pdf",
       "application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "image/jpeg",
+      "image/png",
+      "text/plain",
     ];
     allowed.includes(file.mimetype) ? cb(null, true) : cb(new Error("Only PDF/DOC/DOCX allowed"), false);
   },
