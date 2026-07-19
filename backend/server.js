@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 
 import authRoutes from "./src/routes/auth.js"; // 👈 Import your routes
 import feedbackRoutes from "./src/routes/feedback.js"; // feedback endpoint
+import mlRoutes from "./src/routes/ml.js"; // ML service route
 
 const app = express();
 
@@ -32,6 +33,7 @@ mongoose
 // Wire up your Endpoints
 app.use("/api/auth", authRoutes); // All endpoints will now be at http://localhost:5000/api/auth/register etc.
 app.use("/api/feedback", feedbackRoutes); // feedback endpoint
+app.use("/api/ml", mlRoutes); // ML service endpoint
 
 // Root verification endpoint
 app.get("/", (req, res) => {
