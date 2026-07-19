@@ -11,7 +11,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Import the core pipeline function
-from .pipeline import run_pipeline
+from pipeline import run_pipeline
 
 router = APIRouter()
 
@@ -23,7 +23,20 @@ async def predict(file: UploadFile = File(...)):
     The file is stored temporarily, processed, then removed.
     """
     warnings.warn("The /predict endpoint is deprecated and will be removed in a future version. Use /predict/match instead.", DeprecationWarning)
-# Basic validation – ensure a filename is present
+    # Basic validation – ensure a filename is present and supported MIME type
+    if not file.filename:
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='No file provided')
+    allowed_mime = {
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "image/jpeg",
+        "image/png",
+        "text/plain",
+    }
+    if file.content_type not in allowed_mime:
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='Unsupported file type. Allowed: PDF, DOC, DOCX, JPEG, PNG, TXT')
+
     if not file.filename:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='No file provided')
 
