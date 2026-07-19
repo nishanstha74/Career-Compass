@@ -60,34 +60,11 @@ def run_pipeline(resume_path: str, top_k: int = 5):
         top_n=top_k
     )
 
-    # Build a simplified parsed resume structure for the front‑end
-    parsed_resume = {
-        "name": categorized.get("name", ""),
-        "email": categorized.get("contact", {}).get("email", ""),
-        "education": categorized.get("education", ""),
-        "experience": categorized.get("experience", ""),
-        "skills": categorized.get("skills", []),
-    }
-
-    # Transform the ranked jobs into the shape the UI expects (role + confidence %)
-    career_predictions = []
-    for job in final_ranked:
-        # Each job dict from rank_jobs_from_categorized likely contains
-        # "job_position_name" and "matched_score" (0‑1 float)
-        role = job.get("job_position_name") or job.get("role") or ""
-        confidence = int(round(job.get("matched_score", 0) * 100))
-        career_predictions.append({"role": role, "confidence": confidence})
-
     return {
         "extraction_method": method,
         "categorization_method": categorized["_meta"]["method"],
-        "parsedResume": parsed_resume,
-        "careerPredictions": career_predictions,
-        "final_ranked_jobs": final_ranked,
+        "final_ranked_jobs": final_ranked
     }
-
-
-
 
 
 
