@@ -56,11 +56,15 @@ async def predict(file: UploadFile = File(...)):
 
         # Return the pipeline's dictionary as JSON
         return JSONResponse(content=result)
+    except RuntimeError as rerr:
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail="Could not extract text from the file. If you uploaded an image (JPG/PNG) or scanned document, please install Tesseract OCR on your computer or upload a digital PDF/DOCX resume."
+        )
     except Exception as exc:
-        # Log the exception in a real app – here we simply return a generic error
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(exc),
+            detail=f"Analysis failed: {str(exc)}",
         )
     finally:
         # Clean‑up the temporary file
