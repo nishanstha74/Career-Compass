@@ -52,7 +52,7 @@ export default function MainOverview({
     <>
       {/* ── AI Career Prediction Banner ──── */}
       <div className="bg-[#4f46e5] rounded-2xl p-6 text-white relative overflow-hidden shadow-sm">
-        <div className="absolute right-0 top-0 w-64 h-full bg-gradient-to-l from-white/10 to-transparent pointer-events-none" />
+        <div className="absolute right-0 top-0 w-64 h-full bg-linear-to-l from-white/10 to-transparent pointer-events-none" />
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 relative z-10">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2 text-indigo-100 text-xs font-bold uppercase tracking-wider">
@@ -69,7 +69,7 @@ export default function MainOverview({
 
         <div className="mt-6 flex flex-col md:flex-row items-stretch md:items-center gap-4 relative z-10">
           {/* Target Role Input */}
-          <div className="relative flex-1 group min-w-[250px]">
+          <div className="relative flex-1 group min-w-62.5">
             <Search className="w-4 h-4 absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-600 transition-colors z-20" />
             <input
               type="text"
@@ -89,7 +89,7 @@ export default function MainOverview({
           </div>
 
           {/* Upload Resume Button */}
-          <label className="flex-1 bg-white/10 border border-white/20 hover:bg-white/20 text-white text-sm font-medium rounded-xl py-3 px-4 cursor-pointer transition-all flex items-center justify-between min-w-[250px]">
+          <label className="flex-1 bg-white/10 border border-white/20 hover:bg-white/20 text-white text-sm font-medium rounded-xl py-3 px-4 cursor-pointer transition-all flex items-center justify-between min-w-62.5">
             <span className="flex items-center gap-2 truncate">
               <Upload className="w-4 h-4 shrink-0" />
               <span className="truncate">
@@ -138,38 +138,48 @@ export default function MainOverview({
               Career Match Breakdown
             </h3>
             {isAnalyzing ? (
-  <SkeletonCard lines={5} height="h-5" />
-) : analysisResult ? (
-  analysisResult?.careerPredictions?.length ? (
-    <div className="space-y-5">
-      {analysisResult.careerPredictions?.map((match, i) => (
-        <div key={match.role}>
-          <div className="flex justify-between text-sm font-medium mb-2">
-            <span className="text-slate-700 flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-400">#{i + 1}</span>
-              {match.role}
-            </span>
-            <span className="text-slate-500 font-mono">{match.confidence}%</span>
-          </div>
-          <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-            <div className={`${match.color} h-full rounded-full bar-fill`} style={{ width: `${match.confidence}%` }} />
-          </div>
-        </div>
-      ))}
-    </div>
-  ) : (
-    <div className="flex flex-col items-center justify-center py-10 text-slate-300">
-      <Target className="w-10 h-10 mb-2" />
-      <p className="text-sm font-medium">No career predictions available.</p>
-    </div>
-  )
-) : (
-  <div className="flex flex-col items-center justify-center py-10 text-slate-300">
-    <Target className="w-10 h-10 mb-2" />
-    <p className="text-sm font-medium">Run analysis to see career predictions</p>
-  </div>
-)}
-              
+              <SkeletonCard lines={5} height="h-5" />
+            ) : analysisResult ? (
+              analysisResult?.careerPredictions?.length ? (
+                <div className="space-y-5">
+                  {analysisResult.careerPredictions?.map((match, i) => (
+                    <div key={match.role}>
+                      <div className="flex justify-between text-sm font-medium mb-2">
+                        <span className="text-slate-700 flex items-center gap-2">
+                          <span className="text-xs font-bold text-slate-400">
+                            #{i + 1}
+                          </span>
+                          {match.role}
+                        </span>
+                        <span className="text-slate-500 font-mono">
+                          {match.confidence}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                        <div
+                          className={`${match.color} h-full rounded-full bar-fill`}
+                          style={{ width: `${match.confidence}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-10 text-slate-300">
+                  <Target className="w-10 h-10 mb-2" />
+                  <p className="text-sm font-medium">
+                    No career predictions available.
+                  </p>
+                </div>
+              )
+            ) : (
+              <div className="flex flex-col items-center justify-center py-10 text-slate-300">
+                <Target className="w-10 h-10 mb-2" />
+                <p className="text-sm font-medium">
+                  Run analysis to see career predictions
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Skill Gap Analysis – pending */}
@@ -205,7 +215,10 @@ export default function MainOverview({
                         const edu = analysisResult.parsedResume.education;
                         if (Array.isArray(edu)) {
                           return edu.map((e, i) => (
-                            <p key={i} className="text-slate-700 font-medium mt-0.5 whitespace-pre-wrap">
+                            <p
+                              key={i}
+                              className="text-slate-700 font-medium mt-0.5 whitespace-pre-wrap"
+                            >
                               {e.raw}
                             </p>
                           ));
@@ -224,19 +237,29 @@ export default function MainOverview({
                         if (Array.isArray(exp)) {
                           return exp.map((e, i) => (
                             <div key={i} className="space-y-1">
-                              <p className="text-slate-700 font-medium mt-0.5 whitespace-pre-wrap">{e.raw}</p>
+                              <p className="text-slate-700 font-medium mt-0.5 whitespace-pre-wrap">
+                                {e.raw}
+                              </p>
                               {e.companies?.length > 0 && (
-                                <p className="text-slate-500 text-xs">Companies: {e.companies.join(', ')}</p>
+                                <p className="text-slate-500 text-xs">
+                                  Companies: {e.companies.join(", ")}
+                                </p>
                               )}
                               {e.role && (
-                                <p className="text-slate-700 font-medium mt-0.5 whitespace-pre-wrap">{e.role}</p>
+                                <p className="text-slate-700 font-medium mt-0.5 whitespace-pre-wrap">
+                                  {e.role}
+                                </p>
                               )}
                               {e.company && (
-                                <p className="text-slate-600 italic">{e.company}</p>
+                                <p className="text-slate-600 italic">
+                                  {e.company}
+                                </p>
                               )}
                               {e.highlights?.length > 0 && (
                                 <ul className="list-disc ml-3 space-y-0.5">
-                                  {e.highlights.map((h, hi) => <li key={hi}>{h}</li>)}
+                                  {e.highlights.map((h, hi) => (
+                                    <li key={hi}>{h}</li>
+                                  ))}
                                 </ul>
                               )}
                             </div>
@@ -256,9 +279,13 @@ export default function MainOverview({
                       </span>
                       {label === "Email" ? (
                         value ? (
-                          <p className="text-slate-700 font-medium mt-0.5">{value}</p>
+                          <p className="text-slate-700 font-medium mt-0.5">
+                            {value}
+                          </p>
                         ) : (
-                          <p className="text-slate-500 italic mt-0.5">(email not detected)</p>
+                          <p className="text-slate-500 italic mt-0.5">
+                            (email not detected)
+                          </p>
                         )
                       ) : (
                         <div className="space-y-1">{value}</div>
@@ -272,7 +299,10 @@ export default function MainOverview({
                             {showRaw ? "Hide" : "Show"} Raw JSON
                           </button>
                           {showRaw && (
-                            <pre className="mt-2 bg-slate-50 p-2 rounded text-[10px]" style={{maxHeight: '200px', overflow: 'auto'}}>
+                            <pre
+                              className="mt-2 bg-slate-50 p-2 rounded text-[10px]"
+                              style={{ maxHeight: "200px", overflow: "auto" }}
+                            >
                               {JSON.stringify(analysisResult, null, 2)}
                             </pre>
                           )}
@@ -286,7 +316,10 @@ export default function MainOverview({
                     </span>
                     <div className="flex flex-wrap gap-1.5 mt-1">
                       {analysisResult.parsedResume.skills.map((s) => (
-                        <span key={s} className="bg-indigo-50 border border-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-[10px] font-medium">
+                        <span
+                          key={s}
+                          className="bg-indigo-50 border border-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-[10px] font-medium"
+                        >
                           {s}
                         </span>
                       ))}
