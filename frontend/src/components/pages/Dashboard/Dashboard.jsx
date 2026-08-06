@@ -161,11 +161,17 @@ export default function Dashboard() {
       });
 
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || data.message || 'Analysis failed. Please try a different resume file.');
+      }
+
       setAnalysisResult(data);
       setParsedResume(data.parsedResume);
+      toast.success('Analysis complete!', { id: 'analyze' });
     } catch (err) {
       console.error(err);
-      toast.error('Analysis failed. Please try again.', { id: 'analyze' });
+      toast.error(err.message || 'Analysis failed. Please try again.', { id: 'analyze' });
     } finally {
       setIsAnalyzing(false);
     }
