@@ -1,28 +1,30 @@
-import { useState } from "react";
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import SignIn from "./components/auth/SignIn";
+import SignUp from "./components/auth/SignUp";
+import Dashboard from "./components/pages/Dashboard/Dashboard";
+import Home from "./components/pages/Home";
+import FeedbackModal from "./components/modals/FeedbackModal";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import PublicRoute from "./components/auth/PublicRoute";
 
-function App() {
+export default function App() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-      <header className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-blue-600">CareerCompass</h1>
-        <p className="text-gray-600"> Guide to choose right career </p>
-      </header>
+    <BrowserRouter>
+      <Routes>
+        {/* 1. DEFAULT ROOT ROUTE: Automatically opens the Home landing page when you run the program */}
+        <Route path="/" element={<Home />} />
 
-      <main className="space-y-6">
-        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          Get Started
-        </button>
-        <p className="text-gray-700">
-          This is a simple React + Tailwind setup. We’ll add real features
-          later.
-        </p>
-      </main>
+        {/* Authentication Routes */}
+        <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
+        <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
 
-      <footer className="mt-10 text-sm text-gray-500">
-        © 2026 CareerCompass Project
-      </footer>
-    </div>
+        {/* Dashboard Route */}
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+
+        {/* 2. CATCH-ALL FALLBACK: Redirects broken or unrecognized URLs back to the Home page safely */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;

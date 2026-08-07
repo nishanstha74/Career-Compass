@@ -21,10 +21,14 @@ from ML_train.predict import rank_jobs_from_categorized
 from NLP.matching import build_resume_text
 from ats_score import calculate_ats_score
 
-# pdf_extract.py's own __main__ block does `from pipeline import RESUME_PATH`
+# pdf_extract.py's own __main__ block does `from pipeline import DEFAULT_RESUME_PATH`
 # when run standalone — kept here for that compatibility only.
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 RESUME_PATH = "mock/CV1.pdf"
+=======
+DEFAULT_RESUME_PATH = "mock/CV1.pdf"
+>>>>>>> backend
 
 =======
 DEFAULT_RESUME_PATH = "mock/CV1.pdf"
@@ -115,32 +119,50 @@ def run_pipeline(
         top_n=top_k
     )
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
+=======
+    colors = ["bg-indigo-600", "bg-blue-600", "bg-purple-600", "bg-emerald-600", "bg-amber-600"]
+    
+    career_predictions = []
+    for idx, item in enumerate(final_ranked):
+        score_val = item.get("matched_score", item.get("score", 0.7))
+        confidence_pct = round(score_val * 100) if score_val <= 1.0 else round(score_val)
+        career_predictions.append({
+            "role": item.get("job_position_name", f"Job Option {idx+1}"),
+            "confidence": confidence_pct,
+            "color": colors[idx % len(colors)]
+        })
+
+    parsed_skills = categorized.get("skills", [])
+    if isinstance(parsed_skills, str):
+        parsed_skills = [s.strip() for s in parsed_skills.split(",") if s.strip()]
+
+    contact_info = categorized.get("contact", {})
+    email_val = contact_info.get("email", "") if isinstance(contact_info, dict) else ""
+
+    parsed_resume = {
+        "name": categorized.get("name") or "Extracted Resume Profile",
+        "email": email_val,
+        "education": categorized.get("education", []),
+        "experience": categorized.get("experience", []),
+        "skills": parsed_skills
+    }
+
+>>>>>>> backend
     return {
         "extraction_method": method,
-        "categorization_method": categorized["_meta"]["method"],
-        "final_ranked_jobs": final_ranked
+        "categorization_method": categorized.get("_meta", {}).get("method", "spacy"),
+        "final_ranked_jobs": final_ranked,
+        "careerPredictions": career_predictions,
+        "parsedResume": parsed_resume,
+        "raw_categorized": categorized
     }
 
 
-def main():
-
-    result = run_pipeline(
-        RESUME_PATH,
-        top_k=TOP_K
-    )
-
-    print("\n========== TOP JOB MATCHES ==========\n")
-
-    # print(json.dumps(result["final_ranked_jobs"], indent=4))
-    for i, job in enumerate(result["final_ranked_jobs"], start=1):
-        print(f"--- Job {i} ---")
-        for key, value in job.items():
-            print(f"  {key}: {value}")
-        print()
-
 
 if __name__ == "__main__":
+<<<<<<< HEAD
     main()
 =======
     colors = ["bg-indigo-600", "bg-blue-600", "bg-purple-600", "bg-emerald-600", "bg-amber-600"]
@@ -188,6 +210,8 @@ if __name__ == "__main__":
 
 
 if __name__ == "__main__":
+=======
+>>>>>>> backend
     import argparse
     parser = argparse.ArgumentParser(description="Run the resume-to-job pipeline")
     parser.add_argument(
@@ -196,6 +220,7 @@ if __name__ == "__main__":
         default=DEFAULT_RESUME_PATH,
         help="Path to the resume file (PDF/DOCX)."
     )
+<<<<<<< HEAD
     parser.add_argument(
         "--job", 
         type=str, 
@@ -207,14 +232,23 @@ if __name__ == "__main__":
     # Run pipeline with provided or default path
     result = run_pipeline(args.resume_path, top_k=TOP_K, target_job_description=args.job)
     
+=======
+    args = parser.parse_args()
+    # Run pipeline with provided or default path
+    result = run_pipeline(args.resume_path, top_k=TOP_K)
+>>>>>>> backend
     print("\n========== TOP JOB MATCHES ==========\n")
     for i, job in enumerate(result["final_ranked_jobs"], start=1):
         print(f"--- Job {i} ---")
         for k, v in job.items():
             print(f"  {k}: {v}")
+<<<<<<< HEAD
         print()
 
     if result["ats_evaluation"]:
         print("========== ATS SCORE REPORT ==========")
         print(f"Overall ATS Score: {result['ats_evaluation']['ats_score']}/100")
 >>>>>>> Stashed changes
+=======
+        print()
+>>>>>>> backend

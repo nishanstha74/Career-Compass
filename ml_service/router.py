@@ -1,6 +1,7 @@
 import os
 import shutil
 import uuid
+<<<<<<< HEAD
 import warnings
 from typing import List, Optional
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
@@ -13,10 +14,24 @@ from sklearn.metrics.pairwise import cosine_similarity
 # Import core pipeline and Jooble integration
 from pipeline import run_pipeline
 from jooble_integration import fetch_job_description_from_jooble
+=======
+from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi.responses import JSONResponse
+from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
+import warnings
+from pydantic import BaseModel
+from typing import List
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Import the core pipeline function
+from pipeline import run_pipeline
+>>>>>>> backend
 
 router = APIRouter()
 
 @router.post('/predict', response_class=JSONResponse)
+<<<<<<< HEAD
 async def predict(
     file: UploadFile = File(...),
     job_title: Optional[str] = Form(None)
@@ -36,6 +51,18 @@ async def predict(
     if not file.filename:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='No file provided')
         
+=======
+async def predict(file: UploadFile = File(...)):
+    """Receive a resume file, run the ML pipeline, and return the analysis.
+
+    Supported formats: PDF, DOCX (any format recognised by `run_pipeline`).
+    The file is stored temporarily, processed, then removed.
+    """
+    warnings.warn("The /predict endpoint is deprecated and will be removed in a future version. Use /predict/match instead.", DeprecationWarning)
+    # Basic validation – ensure a filename is present and supported MIME type
+    if not file.filename:
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='No file provided')
+>>>>>>> backend
     allowed_mime = {
         "application/pdf",
         "application/msword",
@@ -47,6 +74,12 @@ async def predict(
     if file.content_type not in allowed_mime:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='Unsupported file type. Allowed: PDF, DOC, DOCX, JPEG, PNG, TXT')
 
+<<<<<<< HEAD
+=======
+    if not file.filename:
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='No file provided')
+
+>>>>>>> backend
     # Create a temporary directory for the upload
     temp_dir = os.path.join(os.getcwd(), 'tmp')
     os.makedirs(temp_dir, exist_ok=True)
@@ -58,6 +91,7 @@ async def predict(
         with open(temp_path, 'wb') as buffer:
             shutil.copyfileobj(file.file, buffer)
 
+<<<<<<< HEAD
         # Optionally fetch target job description from Jooble if job_title is provided
         target_jd = None
         if job_title and job_title.strip():
@@ -68,6 +102,10 @@ async def predict(
 
         # Run the existing pipeline on the saved file with target_job_description
         result = run_pipeline(temp_path, target_job_description=target_jd)
+=======
+        # Run the existing pipeline on the saved file
+        result = run_pipeline(temp_path)
+>>>>>>> backend
 
         # Return the pipeline's dictionary as JSON
         return JSONResponse(content=result)
@@ -88,7 +126,10 @@ async def predict(
         except Exception:
             pass
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> backend
 # --- New Structured JSON Match API ---
 class MatchRequest(BaseModel):
     resume_text: str
@@ -96,20 +137,30 @@ class MatchRequest(BaseModel):
     resume_skills: List[str] = []
     job_skills: List[str] = []
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> backend
 class MatchResponse(BaseModel):
     match_score: float
     skill_overlap_ratio: float
     tfidf_similarity: float
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> backend
 @router.post('/predict/match', response_model=MatchResponse)
 async def predict_match(request: MatchRequest):
     """Calculate a match score using TF‑IDF similarity and skill overlap.
 
     * **Skill overlap** – Jaccard‑style overlap of the provided skill lists.
     * **TF‑IDF similarity** – Cosine similarity between the resume text and job description.
+<<<<<<< HEAD
     The final score is a weighted average (50 % each) and the components are returned
+=======
+    The final score is a weighted average (50 % each) and the components are returned
+>>>>>>> backend
     for display in the UI.
     """
     # Skill overlap (simple Jaccard‑style ratio)
@@ -128,4 +179,10 @@ async def predict_match(request: MatchRequest):
         match_score=round(match_score, 4),
         skill_overlap_ratio=round(skill_overlap, 4),
         tfidf_similarity=round(tfidf_sim, 4),
+<<<<<<< HEAD
     )
+=======
+    )
+
+
+>>>>>>> backend

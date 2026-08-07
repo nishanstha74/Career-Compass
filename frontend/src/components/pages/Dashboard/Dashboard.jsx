@@ -11,6 +11,8 @@ import SkillGaps from "./views/SkillGaps";
 import RoadmapView from "./views/RoadmapView";
 import SettingsView from "./views/SettingsView";
 
+
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user: authUser, checkAuth } = useAuth();
@@ -130,6 +132,7 @@ export default function Dashboard() {
     toast.loading("Parsing resume…", { id: "parse" });
 
     try {
+      // Removed mock parsing. Real parsing will be handled after analysis.
       setParsedResume(null);
       toast.success("Resume parsed successfully!", { id: "parse" });
     } catch {
@@ -148,13 +151,9 @@ export default function Dashboard() {
     toast.loading('Running AI analysis…', { id: 'analyze' });
 
     try {
+      // Build FormData for file upload
       const formData = new FormData();
       formData.append('file', uploadedFile);
-
-      // Pass targetRole as job_title if entered by user
-      if (targetRole && targetRole.trim() !== '') {
-        formData.append('job_title', targetRole.trim());
-      }
 
       const response = await fetch('http://localhost:8000/api/ml/predict', {
         method: 'POST',
@@ -168,9 +167,7 @@ export default function Dashboard() {
       }
 
       setAnalysisResult(data);
-      if (data.parsedResume) {
-        setParsedResume(data.parsedResume);
-      }
+      setParsedResume(data.parsedResume);
       toast.success('Analysis complete!', { id: 'analyze' });
     } catch (err) {
       console.error(err);
@@ -180,8 +177,10 @@ export default function Dashboard() {
     }
   };
 
+
+
   const handleDownloadGaps = () => {
-    if (!analysisResult || !analysisResult.skillGaps) return;
+    if (!analysisResult) return;
     const rows = [
       "Skill,Gap %,Category",
       ...analysisResult.skillGaps.map(
@@ -211,6 +210,7 @@ export default function Dashboard() {
         darkMode ? "bg-slate-950 text-slate-100" : "bg-slate-100 text-slate-800"
       }`}
     >
+      {/* ATS Analysis removed – pending */}
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
 
       <Sidebar
@@ -239,6 +239,7 @@ export default function Dashboard() {
               : "bg-white border-slate-200/60"
           }`}
         >
+          {/* Skill Match Heatmap removed – pending */}
           <div>
             <h1
               className={`text-xl font-bold transition-colors duration-200 ${
@@ -266,6 +267,7 @@ export default function Dashboard() {
         </header>
 
         <div className="flex-1 overflow-y-auto p-8 space-y-6">
+          {/* Metric cards removed – pending features */}
           {activeSection === "dashboard" && (
             <MainOverview
               targetRole={targetRole}
