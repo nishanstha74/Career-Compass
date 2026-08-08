@@ -5,6 +5,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
 
+
 # Local import of the router that holds the /predict endpoint
 from router import router as predict_router
 
@@ -14,10 +15,6 @@ app = FastAPI(
     description="Analyzes uploaded resumes and returns skill scores.",
     version="0.1.0",
 )
-# ---- Root health check ----
-@app.get("/")
-def root():
-    return {"status": "Career Compass ML Service running"}
 
 # ---- CORS configuration (allow any origin – adjust for production) ----
 app.add_middleware(
@@ -41,6 +38,7 @@ class MaxUploadSizeMiddleware(BaseHTTPMiddleware):
                 media_type="text/plain",
             )
         return await call_next(request)
+
 
 app.add_middleware(MaxUploadSizeMiddleware)
 

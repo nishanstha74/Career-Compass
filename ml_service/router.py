@@ -1,7 +1,7 @@
 import os
 import shutil
 import uuid
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from fastapi.responses import JSONResponse
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 import warnings
@@ -16,14 +16,12 @@ from pipeline import run_pipeline
 router = APIRouter()
 
 @router.post('/predict', response_class=JSONResponse)
-async def predict(file: UploadFile = File(...)):
-    """Receive a resume file, run the ML pipeline, and return the analysis.
-
-    Supported formats: PDF, DOCX (any format recognised by `run_pipeline`).
+async def predict(file: UploadFile = File(...), target_role: str = Form("")):
+    """Receive a resume file and optional target_role, run the ML pipeline, and return the analysis.
+    Supported formats: PDF, DOC, DOCX, JPEG, PNG, WEBP, TXT.
     The file is stored temporarily, processed, then removed.
     """
     warnings.warn("The /predict endpoint is deprecated and will be removed in a future version. Use /predict/match instead.", DeprecationWarning)
-    # Basic validation – ensure a filename is present and supported MIME type
     if not file.filename:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='No file provided')
     allowed_mime = {
@@ -32,11 +30,11 @@ async def predict(file: UploadFile = File(...)):
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "image/jpeg",
         "image/png",
+        "image/webp",
         "text/plain",
     }
     if file.content_type not in allowed_mime:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='Unsupported file type. Allowed: PDF, DOC, DOCX, JPEG, PNG, TXT')
-
     if not file.filename:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='No file provided')
 
@@ -52,7 +50,7 @@ async def predict(file: UploadFile = File(...)):
             shutil.copyfileobj(file.file, buffer)
 
         # Run the existing pipeline on the saved file
-        result = run_pipeline(temp_path)
+        result = run_pipeline(temp_path, target_role=target_role)
 
         # Return the pipeline's dictionary as JSON
         return JSONResponse(content=result)
@@ -111,5 +109,3 @@ async def predict_match(request: MatchRequest):
         skill_overlap_ratio=round(skill_overlap, 4),
         tfidf_similarity=round(tfidf_sim, 4),
     )
-
-

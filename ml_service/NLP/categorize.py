@@ -314,15 +314,28 @@ def _add_ml_features(result: dict) -> dict:
     skills_raw = result.get("skills", "")
     if isinstance(skills_raw, dict):
         skills_raw = skills_raw.get("raw", "")
-    elif isinstance(skills_raw, list):
-        # Gemini path already returns a list — keep as-is, just clean it
-        result["skills"] = [s.strip() for s in skills_raw if s and str(s).strip()]
-        skills_raw = None  # already handled, skip the split-string branch below
 
-    if skills_raw is not None:
+    # Standardize skills_raw into a list of strings to process uniformly
+    raw_list = []
+    if isinstance(skills_raw, list):
+        for item in skills_raw:
+            if item:
+                raw_list.append(str(item))
+    elif isinstance(skills_raw, str):
+        raw_list.append(skills_raw)
+
+    cleaned_skills = []
+    for item in raw_list:
         # Split on common delimiters: commas, bullets, newlines, pipes, slashes
-        parts = re.split(r'[,\n•●▪\|/]+', skills_raw)
-        result["skills"] = [p.strip() for p in parts if p.strip()]
+        parts = re.split(r'[,\n•●▪\|/]+', item)
+        for p in parts:
+            p_strip = p.strip()
+            if p_strip:
+                # Remove prefixes like "Languages: ", "Backend: ", "Tools: "
+                p_clean = re.sub(r'^[^:]+:\s*', '', p_strip).strip()
+                if p_clean:
+                    cleaned_skills.append(p_clean)
+    result["skills"] = cleaned_skills
 
     # --- full_text: everything concatenated, for TF-IDF similarity ---
     text_fields = []
