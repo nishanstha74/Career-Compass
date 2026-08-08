@@ -16,16 +16,18 @@ export async function uploadResume(fileBuffer, filename) {
   const formData = new FormData();
   // Convert Buffer/Uint8Array to a Blob for FormData.
   const blob = new Blob([fileBuffer]);
-  formData.append('file', blob, filename);
+  formData.append("file", blob, filename);
 
   const response = await fetch(endpoint, {
-    method: 'POST',
+    method: "POST",
     body: formData,
   });
 
   if (!response.ok) {
     const errText = await response.text();
-    throw new Error(`ML service request failed (${response.status}): ${errText}`);
+    throw new Error(
+      `ML service request failed (${response.status}): ${errText}`,
+    );
   }
 
   return response.json();
@@ -50,4 +52,3 @@ export async function predictMatch(payload) {
   }
   return response.json();
 }
-
