@@ -11,33 +11,31 @@ import SkillGaps from "./views/SkillGaps";
 import RoadmapView from "./views/RoadmapView";
 import SettingsView from "./views/SettingsView";
 
-
-
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user: authUser, checkAuth } = useAuth();
-
+  const [activeSection, setActiveSection] = useState("dashboard");
   const [targetRole, setTargetRole] = useState("");
-  const [resumeText, setResumeText] = useState("");
-  const [jobDescription, setJobDescription] = useState("");
-  const [resumeSkills, setResumeSkills] = useState("");
-  const [jobSkills, setJobSkills] = useState("");
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState(null);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isParsing, setIsParsing] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [parsedResume, setParsedResume] = useState(null);
-  const [activeSection, setActiveSection] = useState("dashboard");
+  const [analysisResult, setAnalysisResult] = useState(null);
+
   const [showRegistrationBanner, setShowRegistrationBanner] = useState(false);
   const [showSidebarProfile, setShowSidebarProfile] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [profilePhoto, setProfilePhoto] = useState(authUser?.profilePhoto || null);
+  const [profilePhoto, setProfilePhoto] = useState(
+    authUser?.profilePhoto || null,
+  );
   const [profileBio, setProfileBio] = useState("Aspiring Frontend Developer");
   const [darkMode, setDarkMode] = useState(false);
   const [navCollapsed, setNavCollapsed] = useState(false);
 
-  const storedName = authUser?.fullName || localStorage.getItem("userName") || "User";
-  const storedEmail = authUser?.email || localStorage.getItem("userEmail") || "No Email Provided";
+  const storedName =
+    authUser?.fullName || localStorage.getItem("userName") || "User";
+  const storedEmail =
+    authUser?.email || localStorage.getItem("userEmail") || "No Email Provided";
   const firstName = storedName.split(" ")[0];
 
   useEffect(() => {
@@ -78,11 +76,11 @@ export default function Dashboard() {
     } catch (err) {
       console.error("Logout request failed:", err);
     }
-    
+
     localStorage.removeItem("userName");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("isNewRegistration");
-    
+
     await checkAuth(); // update global context (will set user to null)
     navigate("/");
   };
@@ -103,19 +101,24 @@ export default function Dashboard() {
 
       const toastId = toast.loading("Saving profile picture...");
       try {
-        const response = await fetch("http://localhost:5000/api/auth/profile-photo", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ profilePhoto: base64Str }),
-        });
+        const response = await fetch(
+          "http://localhost:5000/api/auth/profile-photo",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ profilePhoto: base64Str }),
+          },
+        );
         const data = await response.json();
-        
+
         if (data.success) {
           toast.success("Profile picture saved!", { id: toastId });
           await checkAuth(); // update context
         } else {
-          toast.error(data.message || "Failed to save picture", { id: toastId });
+          toast.error(data.message || "Failed to save picture", {
+            id: toastId,
+          });
         }
       } catch (err) {
         console.error(err);
@@ -144,40 +147,47 @@ export default function Dashboard() {
 
   const handleAnalyzeRole = async () => {
     if (!uploadedFile) {
-      toast.error('Please upload a resume before analysis');
+      toast.error("Please upload a resume before analysis");
       return;
     }
     setIsAnalyzing(true);
-    toast.loading('Running AI analysis…', { id: 'analyze' });
+    toast.loading("Running AI analysis…", { id: "analyze" });
 
     try {
-      // Build FormData for file upload
+      // Build FormData for file upload (append text fields before file binary for Multer parsing)
       const formData = new FormData();
-      formData.append('file', uploadedFile);
+      if (targetRole) {
+        formData.append("target_role", targetRole);
+      }
+      formData.append("file", uploadedFile);
 
-      const response = await fetch('http://localhost:8000/api/ml/predict', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8000/api/ml/predict", {
+        method: "POST",
         body: formData,
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.detail || data.message || 'Analysis failed. Please try a different resume file.');
+        throw new Error(
+          data.detail ||
+            data.message ||
+            "Analysis failed. Please try a different resume file.",
+        );
       }
 
       setAnalysisResult(data);
       setParsedResume(data.parsedResume);
-      toast.success('Analysis complete!', { id: 'analyze' });
+      toast.success("Analysis complete!", { id: "analyze" });
     } catch (err) {
       console.error(err);
-      toast.error(err.message || 'Analysis failed. Please try again.', { id: 'analyze' });
+      toast.error(err.message || "Analysis failed. Please try again.", {
+        id: "analyze",
+      });
     } finally {
       setIsAnalyzing(false);
     }
   };
-
-
 
   const handleDownloadGaps = () => {
     if (!analysisResult) return;
@@ -284,11 +294,20 @@ export default function Dashboard() {
           )}
 
           {activeSection === "careers" && (
-            <CareerMatches setActiveSection={setActiveSection} />
+            <CareerMatches
+              analysisResult={analysisResult}
+              setActiveSection={setActiveSection}
+              setTargetRole={setTargetRole}
+            />
           )}
 
           {activeSection === "skills" && (
-            <SkillGaps setActiveSection={setActiveSection} />
+            <SkillGaps
+              analysisResult={analysisResult}
+              targetRole={targetRole}
+              handleDownloadGaps={handleDownloadGaps}
+              setActiveSection={setActiveSection}
+            />
           )}
 
           {activeSection === "roadmap" && (

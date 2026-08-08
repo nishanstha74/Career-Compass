@@ -23,22 +23,89 @@ export default function SkillGaps({
   // Study topics helper for missing skills
   const getStudyTopics = (skillName) => {
     const s = skillName.toLowerCase();
-    if (s.includes("docker") || s.includes("kubernetes") || s.includes("container")) {
-      return ["Docker Architecture & Images", "Dockerfile & Multi-stage builds", "Docker Compose", "Kubernetes Pods & Deployments"];
-    } else if (s.includes("sql") || s.includes("postgres") || s.includes("mongo") || s.includes("database")) {
-      return ["Relational Database Normalization", "Indexing & Execution Plans", "ACID Transactions", "NoSQL Data Modeling"];
+    if (
+      s.includes("docker") ||
+      s.includes("kubernetes") ||
+      s.includes("container")
+    ) {
+      return [
+        "Docker Architecture & Images",
+        "Dockerfile & Multi-stage builds",
+        "Docker Compose",
+        "Kubernetes Pods & Deployments",
+      ];
+    } else if (
+      s.includes("sql") ||
+      s.includes("postgres") ||
+      s.includes("mongo") ||
+      s.includes("database")
+    ) {
+      return [
+        "Relational Database Normalization",
+        "Indexing & Execution Plans",
+        "ACID Transactions",
+        "NoSQL Data Modeling",
+      ];
     } else if (s.includes("api") || s.includes("rest") || s.includes("grpc")) {
-      return ["RESTful Constraints & Resource Design", "HTTP Status Codes & Headers", "gRPC Protobuf Schema", "API Authentication (JWT/OAuth2)"];
-    } else if (s.includes("python") || s.includes("pytorch") || s.includes("tensorflow") || s.includes("machine learning")) {
-      return ["NumPy & Pandas Data Manipulation", "PyTorch/TensorFlow Tensors", "Supervised Learning Models", "Model Evaluation Metrics"];
-    } else if (s.includes("aws") || s.includes("cloud") || s.includes("gcp") || s.includes("azure")) {
-      return ["Compute & Virtual Machines (EC2/GCE)", "Cloud Storage (S3/IAM)", "Serverless Functions", "VPC & Security Groups"];
-    } else if (s.includes("git") || s.includes("ci/cd") || s.includes("pipeline")) {
-      return ["Branching Strategies (Git Flow)", "GitHub Actions Pipelines", "Automated Testing Suites", "Continuous Deployment"];
-    } else if (s.includes("system design") || s.includes("architecture") || s.includes("microservices")) {
-      return ["Scalability & Load Balancing", "Caching Strategies (Redis/Memcached)", "Message Queues (Kafka/RabbitMQ)", "Database Sharding"];
+      return [
+        "RESTful Constraints & Resource Design",
+        "HTTP Status Codes & Headers",
+        "gRPC Protobuf Schema",
+        "API Authentication (JWT/OAuth2)",
+      ];
+    } else if (
+      s.includes("python") ||
+      s.includes("pytorch") ||
+      s.includes("tensorflow") ||
+      s.includes("machine learning")
+    ) {
+      return [
+        "NumPy & Pandas Data Manipulation",
+        "PyTorch/TensorFlow Tensors",
+        "Supervised Learning Models",
+        "Model Evaluation Metrics",
+      ];
+    } else if (
+      s.includes("aws") ||
+      s.includes("cloud") ||
+      s.includes("gcp") ||
+      s.includes("azure")
+    ) {
+      return [
+        "Compute & Virtual Machines (EC2/GCE)",
+        "Cloud Storage (S3/IAM)",
+        "Serverless Functions",
+        "VPC & Security Groups",
+      ];
+    } else if (
+      s.includes("git") ||
+      s.includes("ci/cd") ||
+      s.includes("pipeline")
+    ) {
+      return [
+        "Branching Strategies (Git Flow)",
+        "GitHub Actions Pipelines",
+        "Automated Testing Suites",
+        "Continuous Deployment",
+      ];
+    } else if (
+      s.includes("system design") ||
+      s.includes("architecture") ||
+      s.includes("microservices")
+    ) {
+      return [
+        "Scalability & Load Balancing",
+        "Caching Strategies (Redis/Memcached)",
+        "Message Queues (Kafka/RabbitMQ)",
+        "Database Sharding",
+      ];
     } else {
-      return ["Core Technical Concepts", "Practical Hands-on Projects", "Industry Best Practices", "Performance Optimization"];
+      return [
+        "Core Technical Concepts",
+        "Practical Hands-on Projects",
+        "Industry Best Practices",
+        "Performance Optimization",
+      ];
     }
   };
 
@@ -52,7 +119,9 @@ export default function SkillGaps({
           No Active Skill Gap Report
         </h3>
         <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
-          Please enter a Target Job Role (e.g. <em>Backend Developer</em>) and click <strong>Analyze Match</strong> on the main Dashboard to generate your skill gap analytics.
+          Please enter a Target Job Role (e.g. <em>Backend Developer</em>) and
+          click <strong>Analyze Match</strong> on the main Dashboard to generate
+          your skill gap analytics.
         </p>
         <button
           onClick={() => setActiveSection("dashboard")}
@@ -89,7 +158,8 @@ export default function SkillGaps({
             Target Role: {ats.matchedRoleName || targetRole}
           </h2>
           <p className="text-xs text-slate-500 mt-1">
-            Identified missing technical skills and recommended study pathways to reach 100% role readiness.
+            Identified missing technical skills and recommended study pathways
+            to reach 100% role readiness.
           </p>
         </div>
 
@@ -119,8 +189,12 @@ export default function SkillGaps({
             <TrendingUp className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-xs font-medium text-slate-400 block">ATS Score</span>
-            <span className="text-xl font-bold text-slate-900">{ats.atsScore} / 100</span>
+            <span className="text-xs font-medium text-slate-400 block">
+              ATS Score
+            </span>
+            <span className="text-xl font-bold text-slate-900">
+              {ats.atsScore} / 100
+            </span>
           </div>
         </div>
 
@@ -129,8 +203,12 @@ export default function SkillGaps({
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-xs font-medium text-slate-400 block">Matched Skills</span>
-            <span className="text-xl font-bold text-slate-900">{ats.matchedSkills?.length || 0} Acquired</span>
+            <span className="text-xs font-medium text-slate-400 block">
+              Matched Skills
+            </span>
+            <span className="text-xl font-bold text-slate-900">
+              {ats.matchedSkills?.length || 0} Acquired
+            </span>
           </div>
         </div>
 
@@ -139,8 +217,12 @@ export default function SkillGaps({
             <AlertCircle className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-xs font-medium text-slate-400 block">Missing Skill Gaps</span>
-            <span className="text-xl font-bold text-slate-900">{ats.missingSkills?.length || 0} Gaps Identified</span>
+            <span className="text-xs font-medium text-slate-400 block">
+              Missing Skill Gaps
+            </span>
+            <span className="text-xl font-bold text-slate-900">
+              {ats.missingSkills?.length || 0} Gaps Identified
+            </span>
           </div>
         </div>
       </div>
@@ -148,7 +230,8 @@ export default function SkillGaps({
       {/* Matched Skills Inventory */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm space-y-3">
         <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Matched Benchmark Skills ({ats.matchedSkills?.length || 0})
+          <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Matched
+          Benchmark Skills ({ats.matchedSkills?.length || 0})
         </h3>
         <div className="flex flex-wrap gap-2">
           {ats.matchedSkills?.length ? (
@@ -172,7 +255,8 @@ export default function SkillGaps({
       <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <Layers className="w-5 h-5 text-amber-500" /> Categorized Skill Gaps & Study Plans
+            <Layers className="w-5 h-5 text-amber-500" /> Categorized Skill Gaps
+            & Study Plans
           </h3>
 
           {/* Category Filter Tabs */}
@@ -217,7 +301,9 @@ export default function SkillGaps({
                     <div className="space-y-1">
                       <div className="flex justify-between text-[11px] text-slate-500 font-medium">
                         <span>Gap Severity</span>
-                        <span className="font-mono font-bold text-slate-700">{gapItem.gap}%</span>
+                        <span className="font-mono font-bold text-slate-700">
+                          {gapItem.gap}%
+                        </span>
                       </div>
                       <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
                         <div
@@ -231,7 +317,8 @@ export default function SkillGaps({
                   {/* Curated Study Topics */}
                   <div className="pt-2 border-t border-slate-200/60 space-y-1.5">
                     <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 flex items-center gap-1">
-                      <BookOpen className="w-3 h-3 text-indigo-600" /> Recommended Learning Path
+                      <BookOpen className="w-3 h-3 text-indigo-600" />{" "}
+                      Recommended Learning Path
                     </span>
                     <ul className="space-y-1 text-xs text-slate-600">
                       {topics.map((t, idx) => (
@@ -248,7 +335,9 @@ export default function SkillGaps({
           ) : (
             <div className="col-span-full py-12 text-center text-slate-400 space-y-2">
               <CheckCircle2 className="w-10 h-10 mx-auto text-emerald-500" />
-              <p className="text-xs font-bold text-slate-700">No skill gaps found for this category!</p>
+              <p className="text-xs font-bold text-slate-700">
+                No skill gaps found for this category!
+              </p>
             </div>
           )}
         </div>
