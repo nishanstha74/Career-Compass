@@ -1,48 +1,68 @@
 {
-  "name": "",
+  "name": "Nar Devi Khatri\nGender",
   "contact": {
-    "email": "rajan.raj@ieee.org",
-    "phone": "+977 9829113768"
+    "email": "dibyakarki2056@gmail.com",
+    "phone": "16027302518"
   },
   "education": {
-    "raw": "Nepal College of Information Technology (NCIT)\nBachelor of Engineering in Software Engineering Ongoing\n- GPA 4.0 maintained in five consecutive semesters.\n1",
+    "raw": "- SLC PASS |Mother Memorial English Boarding School,\nSaptari, Nepal. | (2015 A.D./69.88%)\n- +2 PASS | Ideal Model Secondary School, Kathmandu,\nNepal. | (2017 A.D./59.80%)\n- B.V.Sc and A.H. PASS | Himalayan College of\nAgricultural Sciences & Technology, Kathmandu,\nNepal. | (2023 A.D./3.60 GPA)",
     "institutions": [
-      "Nepal College of Information Technology",
-      "NCIT",
-      "Bachelor of Engineering",
+      "Memorial English Boarding School",
+      "Saptari",
+      "Ideal Model Secondary School",
+      "Agricultural Sciences & Technology",
       "GPA"
     ],
-    "dates": []
-  },
-  "experience": {
-    "raw": "Astergaze Technologies Nov 2025 – Apr 2026\nPart-Time Backend Engineer\n- Developed and maintained backend services using Go.\n- Designed APIs and contributed to database-related development tasks.\n- Worked closely with engineering teams in feature implementation and maintenance.\nAstergaze Technologies May 2025 – Oct 2025\nBackend Intern (Go)\n- Built backend services and APIs using Go.\n- Implemented a Support Chat System from scratch.\n- Worked with REST APIs, gRPC, PostgreSQL, and Docker.\n- Participated in Agile software development practices.",
-    "companies": [
-      "Backend Intern"
-    ],
     "dates": [
-      "Nov 2025",
-      "2026",
-      "May 2025",
-      "Oct 2025"
+      "2023"
     ]
   },
-  "skills": [],
+  "experience": {
+    "raw": "- Intern: Central Veterinary Laboratory, Tripureshwor\n(Apr, 2024 - May, 2024)\n- Intern: Central Referral Veterinary Hospital, Tripureshwor\n(May, 2024 - Jun, 2024)\n- Intern: Animal Nepal, Lalitpur (Jun, 2024 - Jul, 2024)\n- Intern: Veterinary Teaching Hospital (VTH), HICAST\n(Jul, 2024 - Aug, 2024)\n- Intern: Instruction Livestock Farm Complex (ILFC), Kritipur,\n(Aug, 2024 - Sep, 2024)\n- Intern: Central Veterinary Laboratory, Tripureshwor\n(Sep, 2024 - Oct, 2024)",
+    "companies": [
+      "Central Veterinary Laboratory",
+      "Central Referral Veterinary Hospital",
+      "Central Veterinary Laboratory"
+    ],
+    "dates": [
+      "2024 - May, 2024",
+      "May, 2024 - Jun",
+      "2024",
+      "2024",
+      "2024 - Aug",
+      "2024",
+      "2024",
+      "2024 - Oct",
+      "2024"
+    ]
+  },
+  "skills": [
+    "welfare",
+    "and public service.",
+    "- Animal care & management - Multi-Tasking",
+    "Pet care - Decision making",
+    "-",
+    "Time management - Good Communication skills in",
+    "-",
+    "Chemical handling Co-operative environment",
+    "-"
+  ],
   "projects": {
-    "raw": "Blog gRPC Service (Go, gRPC, PostgreSQL)\n- Developed a blog backend service using Go, gRPC, PostgreSQL, and GORM.\n- Implemented CRUD operations, service layers, and database integration.\n- Applied dependency injection using Uber Fx and modular architecture principles.\nSupport Chat System\n- Designed and implemented a backend support chat module during internship.\n- Developed APIs, messaging workflows, and database schema design.\nColorectal Polyp Segmentation using U-Net\n- Developed an automated image segmentation system using the U-Net architecture.\n- Achieved Dice Score of 0.8048 and IoU of 0.7198 on the Kvasir-SEG dataset."
+    "raw": ""
   },
   "certifications": "",
-  "languages": "Backend: REST APIs, gRPC, Gin, GORM, Uber Fx\nDatabases: PostgreSQL, MongoDB\nTools: Docker, Git, GitHub, Linux\nConcepts: API Design, Database Design, Dependency Injection",
-  "summary": "JuniorBackendEngineerwithprofessionalexperiencedevelopingbackendservicesusingGo. Experienced\nin REST APIs, gRPC, PostgreSQL, Docker, and scalable backend architecture. Worked as a Backend\nIntern and Part-Time Backend Engineer at Astergaze Technologies. Strong academic background with\na GPA of 4.0 maintained across five consecutive semesters.",
-  "leadership": "IEEE NCIT Chair Jan 2026 – Present\n- Leading student branch activities, technical events, and member engagement initiatives.\nIEEE NCIT Treasurer Dec 2024 – Jan 2026\n- Contributed to managing financial activities, organizing workshops, competitions, and branch activi-\nties.",
-  "achievements": "- GPA 4.0 maintained for five consecutive semesters.\n- Scholarship recipient at Pokhara University Engineering Program.\n- Best Academic Award (2023) in +2.",
-  "references": "Mr. Niranjan Khakurel\nPrincipal, NCIT\nEmail: niranjan@ncit.edu.np\nPhone :+977 985-1448517\n2",
+  "languages": "- Nepali\n- English\n- Hindi",
+  "summary": "To work with full dedication in dynamic veterinary organization\nthat offers new challenges, allowing me to contribute to both\ninstitutional goals and personal growth. I seek a challenging\ncareer opportunity where I can apply and enhance my clinical",
+  "leadership": "",
+  "achievements": "",
+  "references": "",
   "activities": "",
   "_meta": {
     "method": "spacy",
     "confidence": 0.75
   },
-  "full_text": "JuniorBackendEngineerwithprofessionalexperiencedevelopingbackendservicesusingGo. Experienced\nin REST APIs, gRPC, PostgreSQL, Docker, and scalable backend architecture. Worked as a Backend\nIntern and Part-Time Backend Engineer at Astergaze Technologies. Strong academic background with\na GPA of 4.0 maintained across five consecutive semesters. Astergaze Technologies Nov 2025 – Apr 2026\nPart-Time Backend Engineer\n- Developed and maintained backend services using Go.\n- Designed APIs and contributed to database-related development tasks.\n- Worked closely with engineering teams in feature implementation and maintenance.\nAstergaze Technologies May 2025 – Oct 2025\nBackend Intern (Go)\n- Built backend services and APIs using Go.\n- Implemented a Support Chat System from scratch.\n- Worked with REST APIs, gRPC, PostgreSQL, and Docker.\n- Participated in Agile software development practices. Nepal College of Information Technology (NCIT)\nBachelor of Engineering in Software Engineering Ongoing\n- GPA 4.0 maintained in five consecutive semesters.\n1 Blog gRPC Service (Go, gRPC, PostgreSQL)\n- Developed a blog backend service using Go, gRPC, PostgreSQL, and GORM.\n- Implemented CRUD operations, service layers, and database integration.\n- Applied dependency injection using Uber Fx and modular architecture principles.\nSupport Chat System\n- Designed and implemented a backend support chat module during internship.\n- Developed APIs, messaging workflows, and database schema design.\nColorectal Polyp Segmentation using U-Net\n- Developed an automated image segmentation system using the U-Net architecture.\n- Achieved Dice Score of 0.8048 and IoU of 0.7198 on the Kvasir-SEG dataset. Backend: REST APIs, gRPC, Gin, GORM, Uber Fx\nDatabases: PostgreSQL, MongoDB\nTools: Docker, Git, GitHub, Linux\nConcepts: API Design, Database Design, Dependency Injection IEEE NCIT Chair Jan 2026 – Present\n- Leading student branch activities, technical events, and member engagement initiatives.\nIEEE NCIT Treasurer Dec 2024 – Jan 2026\n- Contributed to managing financial activities, organizing workshops, competitions, and branch activi-\nties. - GPA 4.0 maintained for five consecutive semesters.\n- Scholarship recipient at Pokhara University Engineering Program.\n- Best Academic Award (2023) in +2.",
-  "n_positions_held": 1,
+  "full_text": "To work with full dedication in dynamic veterinary organization\nthat offers new challenges, allowing me to contribute to both\ninstitutional goals and personal growth. I seek a challenging\ncareer opportunity where I can apply and enhance my clinical - Intern: Central Veterinary Laboratory, Tripureshwor\n(Apr, 2024 - May, 2024)\n- Intern: Central Referral Veterinary Hospital, Tripureshwor\n(May, 2024 - Jun, 2024)\n- Intern: Animal Nepal, Lalitpur (Jun, 2024 - Jul, 2024)\n- Intern: Veterinary Teaching Hospital (VTH), HICAST\n(Jul, 2024 - Aug, 2024)\n- Intern: Instruction Livestock Farm Complex (ILFC), Kritipur,\n(Aug, 2024 - Sep, 2024)\n- Intern: Central Veterinary Laboratory, Tripureshwor\n(Sep, 2024 - Oct, 2024) - SLC PASS |Mother Memorial English Boarding School,\nSaptari, Nepal. | (2015 A.D./69.88%)\n- +2 PASS | Ideal Model Secondary School, Kathmandu,\nNepal. | (2017 A.D./59.80%)\n- B.V.Sc and A.H. PASS | Himalayan College of\nAgricultural Sciences & Technology, Kathmandu,\nNepal. | (2023 A.D./3.60 GPA) - Nepali\n- English\n- Hindi welfare and public service. - Animal care & management - Multi-Tasking Pet care - Decision making - Time management - Good Communication skills in - Chemical handling Co-operative environment -",
+  "n_positions_held": 2,
   "has_career_objective": true,
   "has_certification": false,
   "has_languages": true

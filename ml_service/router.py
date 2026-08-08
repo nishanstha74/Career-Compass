@@ -1,188 +1,74 @@
-import os
-import shutil
-import uuid
-<<<<<<< HEAD
-import warnings
-from typing import List, Optional
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
-from fastapi.responses import JSONResponse
-from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
+# ml_service/router.py
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
 from pydantic import BaseModel
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+from typing import Optional, List, Dict, Any
 
-# Import core pipeline and Jooble integration
-from pipeline import run_pipeline
-from jooble_integration import fetch_job_description_from_jooble
-=======
-from fastapi import APIRouter, UploadFile, File, HTTPException
-from fastapi.responses import JSONResponse
-from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
-import warnings
-from pydantic import BaseModel
-from typing import List
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+# Safe relative/absolute imports for pipeline functions
+try:
+    from pipeline import process_resume_pipeline, match_job_pipeline
+except ImportError:
+    from .pipeline import process_resume_pipeline, match_job_pipeline
 
-# Import the core pipeline function
-from pipeline import run_pipeline
->>>>>>> backend
+router = APIRouter(tags=["ML Pipeline Endpoints"])
 
-router = APIRouter()
+# Pydantic schema for structured job match requests
+class JobMatchPayload(BaseModel):
+    resume_text: Optional[str] = ""
+    job_description: Optional[str] = ""
+    resume_skills: Optional[List[str]] = []
+    job_skills: Optional[List[str]] = []
 
-@router.post('/predict', response_class=JSONResponse)
-<<<<<<< HEAD
-async def predict(
+
+@router.post("/predict", status_code=status.HTTP_200_OK)
+@router.post("/analyze", status_code=status.HTTP_200_OK)
+async def analyze_resume(
     file: UploadFile = File(...),
-    job_title: Optional[str] = Form(None)
-):
-    """Receive a resume file and optional job title, run the ML pipeline, and return the analysis.
-
-    Supported formats: PDF, DOCX (any format recognised by `run_pipeline`).
-    If job_title is provided, fetches job description from Jooble for ATS evaluation.
-    The file is stored temporarily, processed, then removed.
+    target_role: Optional[str] = Form("Software Engineer")
+) -> Dict[str, Any]:
     """
-    warnings.warn(
-        "The /predict endpoint is deprecated and will be removed in a future version. Use /predict/match instead.", 
-        DeprecationWarning
-    )
-    
-    # Basic validation – ensure a filename is present and supported MIME type
-    if not file.filename:
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='No file provided')
-        
-=======
-async def predict(file: UploadFile = File(...)):
-    """Receive a resume file, run the ML pipeline, and return the analysis.
-
-    Supported formats: PDF, DOCX (any format recognised by `run_pipeline`).
-    The file is stored temporarily, processed, then removed.
+    Upload a resume document (PDF/DOCX/TXT) to parse skills, evaluate ATS score,
+    generate a domain skill heatmap, and recommend learning roadmaps.
     """
-    warnings.warn("The /predict endpoint is deprecated and will be removed in a future version. Use /predict/match instead.", DeprecationWarning)
-    # Basic validation – ensure a filename is present and supported MIME type
     if not file.filename:
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='No file provided')
->>>>>>> backend
-    allowed_mime = {
-        "application/pdf",
-        "application/msword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "image/jpeg",
-        "image/png",
-        "text/plain",
-    }
-    if file.content_type not in allowed_mime:
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='Unsupported file type. Allowed: PDF, DOC, DOCX, JPEG, PNG, TXT')
-
-<<<<<<< HEAD
-=======
-    if not file.filename:
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='No file provided')
-
->>>>>>> backend
-    # Create a temporary directory for the upload
-    temp_dir = os.path.join(os.getcwd(), 'tmp')
-    os.makedirs(temp_dir, exist_ok=True)
-    # Use a UUID to avoid name collisions
-    temp_path = os.path.join(temp_dir, f"{uuid.uuid4()}_{file.filename}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No file selected or invalid file upload."
+        )
 
     try:
-        # Write the uploaded file to disk
-        with open(temp_path, 'wb') as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        file_bytes = await file.read()
+        if len(file_bytes) == 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Uploaded file is empty."
+            )
 
-<<<<<<< HEAD
-        # Optionally fetch target job description from Jooble if job_title is provided
-        target_jd = None
-        if job_title and job_title.strip():
-            try:
-                target_jd = fetch_job_description_from_jooble(job_title.strip())
-            except Exception as e:
-                print(f"Warning: Failed to fetch Jooble JD for title '{job_title}': {str(e)}")
-
-        # Run the existing pipeline on the saved file with target_job_description
-        result = run_pipeline(temp_path, target_job_description=target_jd)
-=======
-        # Run the existing pipeline on the saved file
-        result = run_pipeline(temp_path)
->>>>>>> backend
-
-        # Return the pipeline's dictionary as JSON
-        return JSONResponse(content=result)
-    except RuntimeError as rerr:
-        raise HTTPException(
-            status_code=HTTP_400_BAD_REQUEST,
-            detail="Could not extract text from the file. If you uploaded an image (JPG/PNG) or scanned document, please install Tesseract OCR on your computer or upload a digital PDF/DOCX resume."
+        analysis_result = process_resume_pipeline(
+            file_bytes=file_bytes,
+            filename=file.filename,
+            mime_type=file.content_type or "",
+            target_role=target_role
         )
-    except Exception as exc:
+        return analysis_result
+
+    except Exception as err:
         raise HTTPException(
-            status_code=HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Analysis failed: {str(exc)}",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Resume processing failed: {str(err)}"
         )
-    finally:
-        # Clean‑up the temporary file
-        try:
-            os.remove(temp_path)
-        except Exception:
-            pass
 
-<<<<<<< HEAD
 
-=======
->>>>>>> backend
-# --- New Structured JSON Match API ---
-class MatchRequest(BaseModel):
-    resume_text: str
-    job_description: str
-    resume_skills: List[str] = []
-    job_skills: List[str] = []
-
-<<<<<<< HEAD
-
-=======
->>>>>>> backend
-class MatchResponse(BaseModel):
-    match_score: float
-    skill_overlap_ratio: float
-    tfidf_similarity: float
-
-<<<<<<< HEAD
-
-=======
->>>>>>> backend
-@router.post('/predict/match', response_model=MatchResponse)
-async def predict_match(request: MatchRequest):
-    """Calculate a match score using TF‑IDF similarity and skill overlap.
-
-    * **Skill overlap** – Jaccard‑style overlap of the provided skill lists.
-    * **TF‑IDF similarity** – Cosine similarity between the resume text and job description.
-<<<<<<< HEAD
-    The final score is a weighted average (50 % each) and the components are returned
-=======
-    The final score is a weighted average (50 % each) and the components are returned
->>>>>>> backend
-    for display in the UI.
+@router.post("/predict/match", status_code=status.HTTP_200_OK)
+@router.post("/match", status_code=status.HTTP_200_OK)
+async def match_job_description(payload: JobMatchPayload) -> Dict[str, Any]:
     """
-    # Skill overlap (simple Jaccard‑style ratio)
-    common = set(request.resume_skills).intersection(set(request.job_skills))
-    skill_overlap = len(common) / (len(request.job_skills) or 1)
-
-    # TF‑IDF cosine similarity between the two text blocks
-    vectorizer = TfidfVectorizer()
-    tfidf_matrix = vectorizer.fit_transform([request.resume_text, request.job_description])
-    tfidf_sim = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
-
-    # Weighted match score (adjust weights as needed)
-    match_score = 0.5 * skill_overlap + 0.5 * tfidf_sim
-
-    return MatchResponse(
-        match_score=round(match_score, 4),
-        skill_overlap_ratio=round(skill_overlap, 4),
-        tfidf_similarity=round(tfidf_sim, 4),
-<<<<<<< HEAD
-    )
-=======
-    )
-
-
->>>>>>> backend
+    Calculates skill overlap and match percentage between a parsed resume and a target job description.
+    """
+    try:
+        match_result = match_job_pipeline(payload.dict())
+        return match_result
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Job matching evaluation failed: {str(err)}"
+        )

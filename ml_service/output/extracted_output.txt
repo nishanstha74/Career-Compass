@@ -1,62 +1,72 @@
-Rajan Raj Acharya
+DIBYA KARKI
 
 Contact
-(cid:131) +977 9829113768 | # rajan.raj@ieee.org | § GitHub | (cid:239) LinkedIn | + Lalitpur, Nepal
+PERSONAL PROFILE
+Father's Name : Dipak Karki
+Mother's Name : Nar Devi Khatri
+Gender : Female
+Nationality : Nepali
+Religion : Hindu
+Date of Birth A.D. : 14th Sep, 1999
+Marital Status : Married
+Citizenship No. : 16027302518
+Height : 5ft
+Weight : 45Kg
+CONTACT
+PHONE:
++977-9768913469
++977-9768913469
+Email: dibyakarki2056@gmail.com
+Permanent Address
+Phattepur, Saptakoshi 1, Saptari, Nepal.
+Temporary Address
+Koteshwor-32, Kathmandu, Nepal.
 
 Summary
-Professional Summary
-JuniorBackendEngineerwithprofessionalexperiencedevelopingbackendservicesusingGo. Experienced
-in REST APIs, gRPC, PostgreSQL, Docker, and scalable backend architecture. Worked as a Backend
-Intern and Part-Time Backend Engineer at Astergaze Technologies. Strong academic background with
-a GPA of 4.0 maintained across five consecutive semesters.
+CAREER OBJECTIVE
+To work with full dedication in dynamic veterinary organization
+that offers new challenges, allowing me to contribute to both
+institutional goals and personal growth. I seek a challenging
+career opportunity where I can apply and enhance my clinical
+skills, knowledge, and the experience to support animal health,
+welfare, and public service.
 
 Education
-Education
-Nepal College of Information Technology (NCIT)
-Bachelor of Engineering in Software Engineering Ongoing
-- GPA 4.0 maintained in five consecutive semesters.
+EDUCATION
+- SLC PASS |Mother Memorial English Boarding School,
+Saptari, Nepal. | (2015 A.D./69.88%)
+- +2 PASS | Ideal Model Secondary School, Kathmandu,
+Nepal. | (2017 A.D./59.80%)
+- B.V.Sc and A.H. PASS | Himalayan College of
+Agricultural Sciences & Technology, Kathmandu,
+Nepal. | (2023 A.D./3.60 GPA)
 
 Experience
-Experience
-Astergaze Technologies Nov 2025 – Apr 2026
-Part-Time Backend Engineer
-- Developed and maintained backend services using Go.
-- Designed APIs and contributed to database-related development tasks.
-- Worked closely with engineering teams in feature implementation and maintenance.
-Astergaze Technologies May 2025 – Oct 2025
-Backend Intern (Go)
-- Built backend services and APIs using Go.
-- Implemented a Support Chat System from scratch.
-- Worked with REST APIs, gRPC, PostgreSQL, and Docker.
-- Participated in Agile software development practices.
-Leadership
-IEEE NCIT Chair Jan 2026 – Present
-- Leading student branch activities, technical events, and member engagement initiatives.
-IEEE NCIT Treasurer Dec 2024 – Jan 2026
-- Contributed to managing financial activities, organizing workshops, competitions, and branch activi-
-ties.
-Achievements
-- GPA 4.0 maintained for five consecutive semesters.
-- Scholarship recipient at Pokhara University Engineering Program.
-- Best Academic Award (2023) in +2.
+EXPERIENCE SUMMARY
+- Intern: Central Veterinary Laboratory, Tripureshwor
+(Apr, 2024 - May, 2024)
+- Intern: Central Referral Veterinary Hospital, Tripureshwor
+(May, 2024 - Jun, 2024)
+- Intern: Animal Nepal, Lalitpur (Jun, 2024 - Jul, 2024)
+- Intern: Veterinary Teaching Hospital (VTH), HICAST
+(Jul, 2024 - Aug, 2024)
+- Intern: Instruction Livestock Farm Complex (ILFC), Kritipur,
+(Aug, 2024 - Sep, 2024)
+- Intern: Central Veterinary Laboratory, Tripureshwor
+(Sep, 2024 - Oct, 2024)
 
 Skills
-Technical Skills
-Languages: Go, JavaScript, SQL
-Backend: REST APIs, gRPC, Gin, GORM, Uber Fx
-Databases: PostgreSQL, MongoDB
-Tools: Docker, Git, GitHub, Linux
-Concepts: API Design, Database Design, Dependency Injection
+SKILLS AND ABILITIES
+- Animal care & management - Multi-Tasking
+Pet care - Decision making
+-
+Time management - Good Communication skills in
+-
+Chemical handling Co-operative environment
+-
 
-Projects
-Projects
-Blog gRPC Service (Go, gRPC, PostgreSQL)
-- Developed a blog backend service using Go, gRPC, PostgreSQL, and GORM.
-- Implemented CRUD operations, service layers, and database integration.
-- Applied dependency injection using Uber Fx and modular architecture principles.
-Support Chat System
-- Designed and implemented a backend support chat module during internship.
-- Developed APIs, messaging workflows, and database schema design.
-Colorectal Polyp Segmentation using U-Net
-- Developed an automated image segmentation system using the U-Net architecture.
-- Achieved Dice Score of 0.8048 and IoU of 0.7198 on the Kvasir-SEG dataset.
+Languages
+Languages
+- Nepali
+- English
+- Hindi
