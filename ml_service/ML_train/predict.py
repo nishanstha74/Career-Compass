@@ -21,13 +21,16 @@ Usable two ways:
 import argparse
 import json
 import os
+import re
 
 import joblib
 import numpy as np
 import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "..", "models")
-DATASET_PATH = os.path.join(os.path.dirname(__file__), "..", "dataset", "resume_data.csv")
+DATASET_PATH = os.path.join(os.path.dirname(__file__), "..", "dataset", "resume_data_last_dance.csv")
 # Default input is now categorize.py's actual output location, not a hand-written sample.
 DEFAULT_INPUT_FILE = os.path.join(os.path.dirname(__file__), "..", "output", "categorized_output.json")
 
@@ -276,31 +279,98 @@ def load_job_pool() -> list:
     return _job_pool_cache
 
 
+def _calculate_tfidf_similarity(resume_record: dict, jobs: list) -> np.ndarray:
+    """
+    Computes TF-IDF Cosine Similarity between the candidate resume features
+    and job descriptions in the job pool.
+    """
+    resume_skills = str(resume_record.get("skills", ""))
+    resume_exp = str(resume_record.get("responsibilities", ""))
+    resume_text = (resume_skills + " ") * 3 + resume_exp
+
+    job_texts = []
+    for job in jobs:
+        j_name = str(job.get("job_position_name", ""))
+        j_skills = str(job.get("skills_required", ""))
+        j_req = str(job.get("responsibilities.1", ""))
+        j_text = (j_name + " " + j_skills + " ") * 3 + j_req
+        job_texts.append(j_text)
+
+    try:
+        vectorizer = TfidfVectorizer(stop_words='english', ngram_range=(1, 2), max_features=3000)
+        all_texts = [resume_text] + job_texts
+        tfidf_matrix = vectorizer.fit_transform(all_texts)
+        resume_vec = tfidf_matrix[0:1]
+        job_vecs = tfidf_matrix[1:]
+        sims = cosine_similarity(resume_vec, job_vecs).flatten()
+        return sims
+    except Exception:
+        return np.zeros(len(jobs))
+
+
+def _calculate_skill_overlap(resume_record: dict, jobs: list) -> np.ndarray:
+    """
+    Calculates token-based skill overlap ratio between resume skills and job requirements.
+    """
+    raw_skills = str(resume_record.get("skills", "")).lower()
+    resume_tokens = {t for t in re.split(r'[^a-zA-Z0-9+#.]+', raw_skills) if len(t) > 1}
+
+    overlaps = []
+    for job in jobs:
+        j_text = (str(job.get("job_position_name", "")) + " " + str(job.get("skills_required", ""))).lower()
+        j_tokens = {t for t in re.split(r'[^a-zA-Z0-9+#.]+', j_text) if len(t) > 1}
+
+        if not j_tokens or not resume_tokens:
+            overlaps.append(0.0)
+            continue
+
+        common = resume_tokens.intersection(j_tokens)
+        ratio = len(common) / max(len(j_tokens), 1)
+        overlaps.append(ratio)
+
+    return np.array(overlaps)
+
+
 def rank_jobs(resume_record: dict, top_n: int = 5) -> list:
     """
-    Score a single FLAT resume record (already in RESUME_FEATURES shape)
-    against every unique job in the dataset and return the top_n matches.
-
-    Most callers should use rank_jobs_from_categorized() instead -- this
-    lower-level function is kept for cases where you already have data in
-    the flat training schema (e.g. re-scoring dataset rows directly).
+    Score a single FLAT resume record against every unique job in the dataset
+    using a Hybrid Engine: TF-IDF Cosine Similarity (50%) + Token Skill Overlap (30%)
+    + ML Model Ensemble (20%).
     """
     jobs = load_job_pool()
     models = load_models()
 
     texts = [build_text_input({**resume_record, **job}) for job in jobs]
 
-    total_scores = np.zeros(len(texts))
+    model_scores = np.zeros(len(texts))
     for pipeline in models.values():
-        total_scores += pipeline.predict(texts)
-    avg_scores = total_scores / len(models)
+        model_scores += pipeline.predict(texts)
+    model_scores = model_scores / len(models)
 
-    ranked = sorted(zip(jobs, avg_scores), key=lambda pair: pair[1], reverse=True)
+    m_min, m_max = model_scores.min(), model_scores.max()
+    if m_max > m_min:
+        norm_model = (model_scores - m_min) / (m_max - m_min)
+    else:
+        norm_model = model_scores
 
-    return [
-        {"job_position_name": job["job_position_name"], "matched_score": float(score)}
-        for job, score in ranked[:top_n]
-    ]
+    tfidf_sims = _calculate_tfidf_similarity(resume_record, jobs)
+    skill_overlaps = _calculate_skill_overlap(resume_record, jobs)
+
+    # Hybrid Score: 50% TF-IDF Cosine Sim, 30% Skill Overlap, 20% ML Ensemble
+    final_scores = (0.50 * tfidf_sims) + (0.30 * skill_overlaps) + (0.20 * norm_model)
+
+    ranked = sorted(zip(jobs, final_scores), key=lambda pair: pair[1], reverse=True)
+
+    results = []
+    for job, score in ranked[:top_n]:
+        # Scale score into realistic 35% - 95% range for UI confidence presentation
+        ui_score = max(0.35, min(0.95, score * 1.8 if score > 0.1 else 0.35))
+        results.append({
+            "job_position_name": job["job_position_name"],
+            "matched_score": float(ui_score)
+        })
+
+    return results
 
 
 def rank_jobs_from_categorized(categorized: dict, top_n: int = 5) -> list:

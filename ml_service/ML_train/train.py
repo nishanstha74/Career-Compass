@@ -27,7 +27,7 @@ from xgboost import XGBRegressor
 
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
-df = pd.read_csv("../dataset/resume_data.csv")
+df = pd.read_csv("../dataset/resume_data_last_dance.csv")
 
 df.columns = (
     df.columns
